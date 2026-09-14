@@ -1,0 +1,24 @@
+---
+config:
+  layout: elk
+---
+flowchart TB
+
+A["Login"] -- Admin --> B["Accueil"]
+
+B -- Voir commandes récentes --> B
+B -- Accéder --> C0["Commandes"]
+
+C0 -- Voir/Modifier --> C0
+C0 --> D0{"Nouvelles commandes client ?"}
+
+D0 -- Oui --> E0["Valider nouvelles commandes client"]
+D0 -- Non --> C0
+
+E0 -- Validation --> C0 & F0["Commandes clients envoyé au Magasinier"]
+
+
+
+B -- Gérer --> C1["Stock"]
+
+C1 -- CRUD --> C1
