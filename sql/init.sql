@@ -28,7 +28,7 @@ CREATE TABLE `user` (
 LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES
 (1,'TOTO','TATA',0,'0123456789','toto@gmail.com',1,'b188f429056f143854354596583bef63caaa3b18d697f7d4a12b28df6ac44d11'),
-(2,'TITI','TUTU',1,'9876543210','titi@gmail.com',1,'9d2c596705b928184505b9451b5db2d6268689d27c22a99df06ae9c1ecc3682e'),
+(2,'TITI','TUTU',1,'9876543210','titi@gmail.com',1,'9d2c596705b928184505b9451b5db2d6268689d27c22a99df06ae9c1ecc3682e');
 UNLOCK TABLES;
 
 
@@ -48,7 +48,7 @@ CREATE TABLE `vehicule` (
 LOCK TABLES `vehicule` WRITE;
 INSERT INTO `vehicule` VALUES
 (1,'BC-234-DE','Peugeot','208','2021-05-31','2021-05-31','2031-05-22',1),
-(2,'AC-128-SG','CITROEN','C3','2025-10-16','2025-10-31','2025-11-01',0),
+(2,'AC-128-SG','CITROEN','C3','2025-10-16','2025-10-31','2025-11-01',0);
 UNLOCK TABLES;
 
 DELIMITER //
@@ -81,7 +81,7 @@ INSERT INTO `type_incident` VALUES
 (2,'Panne',0),
 (3,'Fuite',0),
 (4,'Défectuosité',0),
-(5,'Problème technique',0),
+(5,'Problème technique',0);
 UNLOCK TABLES;
 
 
@@ -95,7 +95,7 @@ CREATE TABLE `assurance` (
 LOCK TABLES `assurance` WRITE;
 INSERT INTO `assurance` VALUES
 (1,'2025-03-01', 'AXA'),
-(2,'2025-02-15', 'EDF'),
+(2,'2025-02-15', 'EDF');
 UNLOCK TABLES;
 
 DELIMITER //
@@ -122,7 +122,7 @@ CREATE TABLE `assurance_vehicule` (
 LOCK TABLES `assurance_vehicule` WRITE;
 INSERT INTO `assurance_vehicule` VALUES
 (1,1),
-(2,2),
+(2,2);
 UNLOCK TABLES;
 
 
@@ -142,7 +142,7 @@ INSERT INTO `lieu` VALUES
 (2,'Lyon','69000',2,'20 avenue des Alpes',1),
 (3,'Marseille','13000',3,'30 boulevard Saint-Pierre',1),
 (4,'Toulouse','31000',4,'40 rue de la Garonne',1),
-(5,'Nice','06000',5,'50 avenue des Anges',1),
+(5,'Nice','06000',5,'50 avenue des Anges',1);
 UNLOCK TABLES;
 
 
@@ -232,7 +232,6 @@ END//
 DELIMITER ;
 
 LOCK TABLES `incident` WRITE;
-INSERT INTO `incident` VALUES
 UNLOCK TABLES;
 
 CREATE TABLE `infraction` (
@@ -283,7 +282,7 @@ CREATE TABLE `permis` (
 LOCK TABLES `permis` WRITE;
 INSERT INTO `permis` VALUES
 (1,'1234567888','2025-06-01','2038-11-03','C'),
-(2,'1234567900','2025-09-04','2025-09-28','C'),
+(2,'1234567900','2025-09-04','2025-09-28','C');
 UNLOCK TABLES;
 
 DELIMITER //
@@ -311,7 +310,6 @@ CREATE TABLE `historique` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 LOCK TABLES `historique` WRITE;
-INSERT INTO `historique` VALUES
 UNLOCK TABLES;
 
 
@@ -326,10 +324,4 @@ CREATE TABLE `suivi` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 LOCK TABLES `suivi` WRITE;
-INSERT INTO `suivi` VALUES
-(1,1,'2025-09-01','INTERVENTION PRÉVENTIVE SUR LE MOTEUR. ...'),
-(2,2,'2025-09-12','Inspection générale après signalement'),
-(3,3,'2025-09-09','Contrôle des niveaux d’huile.'),
-(4,4,'2025-09-02','Réglage du système électrique. Zd'),
-(5,5,'2025-09-08','Changement de pneus usés.'),
 UNLOCK TABLES;
