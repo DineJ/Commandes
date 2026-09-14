@@ -1,327 +1,617 @@
-CREATE TABLE `Ip` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `adresse_ip` VARCHAR(40) NOT NULL,
-  `nb_echec` INT(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `adresse_ip` (`adresse_ip`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- phpMyAdmin SQL Dump
+-- version 5.2.3
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : mariadb-commandes
+-- Généré le : lun. 14 sep. 2026 à 07:20
+-- Version du serveur : 11.3.2-MariaDB-1:11.3.2+maria~ubu2204
+-- Version de PHP : 8.3.30
 
-LOCK TABLES `Ip` WRITE;
-INSERT INTO `Ip` (`id`,`adresse_ip`,`nb_echec`) VALUES
-(3,'127.0.0.1',0),
-(4,'192.168.0.1',0);
-UNLOCK TABLES;
-
-
-CREATE TABLE `user` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `nom` VARCHAR(50) NOT NULL,
-  `prenom` VARCHAR(50) NOT NULL,
-  `admin` TINYINT(1) NOT NULL DEFAULT 0,
-  `telephone` CHAR(10) NOT NULL,
-  `mail` VARCHAR(100) NOT NULL,
-  `actif` TINYINT(1) NOT NULL DEFAULT 1,
-  `clef_connexion` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-LOCK TABLES `user` WRITE;
-INSERT INTO `user` VALUES
-(1,'TOTO','TATA',0,'0123456789','toto@gmail.com',1,'b188f429056f143854354596583bef63caaa3b18d697f7d4a12b28df6ac44d11'),
-(2,'TITI','TUTU',1,'9876543210','titi@gmail.com',1,'9d2c596705b928184505b9451b5db2d6268689d27c22a99df06ae9c1ecc3682e');
-UNLOCK TABLES;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 
-CREATE TABLE `vehicule` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `plaque` CHAR(255) NOT NULL,
-  `marque` VARCHAR(50) NOT NULL,
-  `modele` VARCHAR(50) NOT NULL,
-  `date_achat` DATE NOT NULL,
-  `date_immat` DATE NOT NULL,
-  `ct` DATE NOT NULL,
-  `actif` TINYINT(1) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `UNIQUE_plaque` (`plaque`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-LOCK TABLES `vehicule` WRITE;
-INSERT INTO `vehicule` VALUES
-(1,'BC-234-DE','Peugeot','208','2021-05-31','2021-05-31','2031-05-22',1),
-(2,'AC-128-SG','CITROEN','C3','2025-10-16','2025-10-31','2025-11-01',0);
-UNLOCK TABLES;
+--
+-- Base de données : `appdb`
+--
 
-DELIMITER //
-CREATE TRIGGER trg_vehicule_date_achat_bi BEFORE INSERT ON vehicule
-FOR EACH ROW
-BEGIN
-  IF NEW.date_achat > CURRENT_DATE() THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date d'achat est ultérieur à aujourd'hui. Veuillez resaisir votre date.";
-  END IF;
-END//
-CREATE TRIGGER trg_vehicule_date_achat_bu BEFORE UPDATE ON vehicule
-FOR EACH ROW
-BEGIN
-  IF NEW.date_achat > CURRENT_DATE() THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date d'achat est ultérieur à aujourd'hui. Veuillez resaisir votre date.";
-  END IF;
-END//
-DELIMITER ;
+-- --------------------------------------------------------
 
-CREATE TABLE `type_incident` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `nom` VARCHAR(255) NOT NULL,
-  `critique` TINYINT(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-LOCK TABLES `type_incident` WRITE;
-INSERT INTO `type_incident` VALUES
-(1,'Accident',1),
-(2,'Panne',0),
-(3,'Fuite',0),
-(4,'Défectuosité',0),
-(5,'Problème technique',0);
-UNLOCK TABLES;
-
+--
+-- Structure de la table `assurance`
+--
 
 CREATE TABLE `assurance` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `date_contrat` DATE NOT NULL,
-  `nom_assurance` VARCHAR(255),
-  PRIMARY KEY (`id`)
+  `id` int(11) NOT NULL,
+  `date_contrat` date NOT NULL,
+  `nom_assurance` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-LOCK TABLES `assurance` WRITE;
-INSERT INTO `assurance` VALUES
-(1,'2025-03-01', 'AXA'),
-(2,'2025-02-15', 'EDF');
-UNLOCK TABLES;
+--
+-- Déchargement des données de la table `assurance`
+--
 
-DELIMITER //
-CREATE TRIGGER trg_assurance_date_bu BEFORE UPDATE ON assurance
-FOR EACH ROW
-BEGIN
+INSERT INTO `assurance` (`id`, `date_contrat`, `nom_assurance`) VALUES
+(1, '2025-03-01', 'AXA'),
+(2, '2025-02-15', 'EDF');
+
+--
+-- Déclencheurs `assurance`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_assurance_date_bu` BEFORE UPDATE ON `assurance` FOR EACH ROW BEGIN
   IF NEW.date_contrat < OLD.date_contrat THEN
     SIGNAL SQLSTATE '45000'
       SET MESSAGE_TEXT = "La date du nouveau contrat est antérieur à celle de l ancien. Veuillez resaisir votre date.";
   END IF;
-END//
+END
+$$
 DELIMITER ;
 
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `assurance_vehicule`
+--
 
 CREATE TABLE `assurance_vehicule` (
-  `id_assurance` INT(11) NOT NULL,
-  `id_vehicule` INT(11) NOT NULL,
-  PRIMARY KEY (`id_assurance`,`id_vehicule`),
-  KEY `id_vehicule` (`id_vehicule`),
-  CONSTRAINT `assurance_vehicule_ibfk_1` FOREIGN KEY (`id_assurance`) REFERENCES `assurance` (`id`),
-  CONSTRAINT `assurance_vehicule_ibfk_2` FOREIGN KEY (`id_vehicule`) REFERENCES `vehicule` (`id`)
+  `id_assurance` int(11) NOT NULL,
+  `id_vehicule` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-LOCK TABLES `assurance_vehicule` WRITE;
-INSERT INTO `assurance_vehicule` VALUES
-(1,1),
-(2,2);
-UNLOCK TABLES;
+--
+-- Déchargement des données de la table `assurance_vehicule`
+--
 
+INSERT INTO `assurance_vehicule` (`id_assurance`, `id_vehicule`) VALUES
+(1, 1),
+(2, 2);
 
-CREATE TABLE `lieu` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `nom_lieu` VARCHAR(100) NOT NULL,
-  `code_postal` CHAR(5) NOT NULL,
-  `numero` INT(11) NOT NULL,
-  `adresse` VARCHAR(255) NOT NULL,
-  `actif` TINYINT(1) NOT NULL,
-  PRIMARY KEY (`id`)
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `historique`
+--
+
+CREATE TABLE `historique` (
+  `id_user` int(11) NOT NULL,
+  `id_ip` int(11) NOT NULL,
+  `date_dbt` timestamp NOT NULL,
+  `date_fin` timestamp NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-LOCK TABLES `lieu` WRITE;
-INSERT INTO `lieu` VALUES
-(1,'Paris','75000',1,'10 rue de Paris',1),
-(2,'Lyon','69000',2,'20 avenue des Alpes',1),
-(3,'Marseille','13000',3,'30 boulevard Saint-Pierre',1),
-(4,'Toulouse','31000',4,'40 rue de la Garonne',1),
-(5,'Nice','06000',5,'50 avenue des Anges',1);
-UNLOCK TABLES;
+--
+-- Déchargement des données de la table `historique`
+--
 
+INSERT INTO `historique` (`id_user`, `id_ip`, `date_dbt`, `date_fin`) VALUES
+(2, 6, '2026-09-14 09:08:56', '2026-09-14 09:08:56'),
+(2, 6, '2026-09-14 09:18:45', '2026-09-14 09:18:58');
 
-CREATE TABLE `mission` (
-  `id` INT(11) NOT NULL,
-  `id_vehicule` INT(11) NOT NULL,
-  `id_user` INT(11) NOT NULL,
-  `id_lieu_depart` INT(11) NOT NULL,
-  `id_lieu_arrive` INT(11) NOT NULL,
-  `motif` ENUM('maraude','livraison','repas','demenagement','personnel') NOT NULL,
-  `date_depart` DATE NOT NULL,
-  `date_arrivee` DATE NOT NULL,
-  `km_depart` INT(11) NOT NULL,
-  `km_arrive` INT(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_camion` (`id_vehicule`),
-  KEY `FK_user` (`id_user`),
-  KEY `FK_lieu_depart` (`id_lieu_depart`),
-  KEY `FK_lieu_arrive` (`id_lieu_arrive`),
-  CONSTRAINT `mission_ibfk_1` FOREIGN KEY (`id_vehicule`) REFERENCES `vehicule` (`id`),
-  CONSTRAINT `mission_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`),
-  CONSTRAINT `mission_ibfk_3` FOREIGN KEY (`id_lieu_depart`) REFERENCES `lieu` (`id`),
-  CONSTRAINT `mission_ibfk_4` FOREIGN KEY (`id_lieu_arrive`) REFERENCES `lieu` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- --------------------------------------------------------
 
-DELIMITER //
-CREATE TRIGGER trg_mission_dates_bi BEFORE INSERT ON mission
-FOR EACH ROW
-BEGIN
-  IF NEW.date_arrivee < NEW.date_depart THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date d arrivée est antérieur à celle de départ. Veuillez resaisir votre date.";
-  END IF;
-  IF NEW.date_depart > CURRENT_DATE() THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ="La date de départ est ultérieur à aujourd hui. Veuillez resaisir votre date.";
-  END IF;
-  IF NEW.km_arrive < NEW.km_depart THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Le kilométrage d arrivé est plus petit que celui de départ. Veuillez resaisir votre nombre.";
-  END IF;
-END//
-CREATE TRIGGER trg_mission_dates_bu BEFORE UPDATE ON mission
-FOR EACH ROW
-BEGIN
-  IF NEW.date_arrivee < NEW.date_depart THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date d arrivée est antérieur à celle de départ. Veuillez resaisir votre date.";
-  END IF;
-  IF NEW.date_depart > CURRENT_DATE() THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ="La date de départ est ultérieur à aujourd hui. Veuillez resaisir votre date.";
-  END IF;
-  IF NEW.km_arrive < NEW.km_depart THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Le kilométrage d arrivé est plus petit que celui de départ. Veuillez resaisir votre nombre.";
-  END IF;
-END//
-DELIMITER ;
-
+--
+-- Structure de la table `incident`
+--
 
 CREATE TABLE `incident` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `id_vehicule` INT(11) NOT NULL,
-  `id_user` INT(11) NOT NULL,
-  `id_type_incident` INT(11) NOT NULL,
-  `date_incident` DATE NOT NULL,
-  `explication_incident` TEXT NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_camion` (`id_vehicule`),
-  KEY `id_user` (`id_user`),
-  KEY `id_type_accident` (`id_type_incident`),
-  CONSTRAINT `incident_ibfk_1` FOREIGN KEY (`id_vehicule`) REFERENCES `vehicule` (`id`),
-  CONSTRAINT `incident_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`),
-  CONSTRAINT `incident_ibfk_3` FOREIGN KEY (`id_type_incident`) REFERENCES `type_incident` (`id`)
+  `id` int(11) NOT NULL,
+  `id_vehicule` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `id_type_incident` int(11) NOT NULL,
+  `date_incident` date NOT NULL,
+  `explication_incident` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-DELIMITER //
-CREATE TRIGGER trg_incident_date_bi BEFORE INSERT ON incident
-FOR EACH ROW
-BEGIN
+--
+-- Déclencheurs `incident`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_incident_date_bi` BEFORE INSERT ON `incident` FOR EACH ROW BEGIN
   IF NEW.date_incident > CURRENT_DATE() THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date de l accident est ultérieur à celle d aujourd hui. Veuillez resaisir vos dates.";
   END IF;
-END//
-CREATE TRIGGER trg_incident_date_bu BEFORE UPDATE ON incident
-FOR EACH ROW
-BEGIN
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `trg_incident_date_bu` BEFORE UPDATE ON `incident` FOR EACH ROW BEGIN
   IF NEW.date_incident > CURRENT_DATE() THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date de l accident est ultérieur à celle d aujourd hui. Veuillez resaisir vos dates.";
   END IF;
-END//
+END
+$$
 DELIMITER ;
 
-LOCK TABLES `incident` WRITE;
-UNLOCK TABLES;
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `infraction`
+--
 
 CREATE TABLE `infraction` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `id_mission` INT(11) NOT NULL,
-  `date_infraction` DATE NOT NULL,
-  `commentaire` TEXT NOT NULL,
-  `points` TINYINT(3) UNSIGNED NOT NULL,
-  `prix` SMALLINT(5) UNSIGNED NOT NULL,
-  `stationnement` TINYINT(1) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_trajet` (`id_mission`),
-  CONSTRAINT `infraction_ibfk_1` FOREIGN KEY (`id_mission`) REFERENCES `mission` (`id`)
+  `id` int(11) NOT NULL,
+  `id_mission` int(11) NOT NULL,
+  `date_infraction` date NOT NULL,
+  `commentaire` text NOT NULL,
+  `points` tinyint(3) UNSIGNED NOT NULL,
+  `prix` smallint(5) UNSIGNED NOT NULL,
+  `stationnement` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-DELIMITER //
-CREATE TRIGGER trg_infraction_date_bi BEFORE INSERT ON infraction
-FOR EACH ROW
-BEGIN
+--
+-- Déclencheurs `infraction`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_infraction_date_bi` BEFORE INSERT ON `infraction` FOR EACH ROW BEGIN
   IF NEW.date_infraction > CURRENT_DATE() THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date de l infraction est ultérieur à celle d aujourd hui. Veuillez resaisir votre date.";
   END IF;
-END//
-CREATE TRIGGER trg_infraction_date_bu BEFORE UPDATE ON infraction
-FOR EACH ROW
-BEGIN
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `trg_infraction_date_bu` BEFORE UPDATE ON `infraction` FOR EACH ROW BEGIN
   IF NEW.date_infraction > CURRENT_DATE() THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date de l infraction est ultérieur à celle d aujourd hui. Veuillez resaisir votre date.";
   END IF;
-END//
+END
+$$
 DELIMITER ;
 
-LOCK TABLES `infraction` WRITE;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
+--
+-- Structure de la table `Ip`
+--
 
-CREATE TABLE `permis` (
-  `id_user` INT(11) NOT NULL,
-  `num_permis` CHAR(12) NOT NULL,
-  `date_permis` DATE NOT NULL,
-  `update_permis` DATE NOT NULL,
-  `type_permis` ENUM('B','BE','C','C1','C1E') NOT NULL,
-  PRIMARY KEY (`id_user`),
-  UNIQUE KEY `UNIQUE_num_permis` (`num_permis`) USING BTREE,
-  CONSTRAINT `permis_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`)
+CREATE TABLE `Ip` (
+  `id` int(11) NOT NULL,
+  `adresse_ip` varchar(40) NOT NULL,
+  `nb_echec` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-LOCK TABLES `permis` WRITE;
-INSERT INTO `permis` VALUES
-(1,'1234567888','2025-06-01','2038-11-03','C'),
-(2,'1234567900','2025-09-04','2025-09-28','C');
-UNLOCK TABLES;
+--
+-- Déchargement des données de la table `Ip`
+--
 
-DELIMITER //
-CREATE TRIGGER trg_permis_update_date_bu BEFORE UPDATE ON permis
-FOR EACH ROW
-BEGIN
+INSERT INTO `Ip` (`id`, `adresse_ip`, `nb_echec`) VALUES
+(6, '172.28.0.1', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `lieu`
+--
+
+CREATE TABLE `lieu` (
+  `id` int(11) NOT NULL,
+  `nom_lieu` varchar(100) NOT NULL,
+  `code_postal` char(5) NOT NULL,
+  `numero` int(11) NOT NULL,
+  `adresse` varchar(255) NOT NULL,
+  `actif` tinyint(1) NOT NULL,
+  `surnom` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `lieu`
+--
+
+INSERT INTO `lieu` (`id`, `nom_lieu`, `code_postal`, `numero`, `adresse`, `actif`, `surnom`) VALUES
+(1, 'Paris', '75000', 1, '10 rue de Paris', 1, 'Paris'),
+(2, 'Lyon', '69000', 2, '20 avenue des Alpes', 1, 'Lyon'),
+(3, 'Marseille', '13000', 3, '30 boulevard Saint-Pierre', 1, 'Marseille'),
+(4, 'Toulouse', '31000', 4, '40 rue de la Garonne', 1, 'Toulouse'),
+(5, 'Nice', '06000', 5, '50 avenue des Anges', 1, 'Nice');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `mission`
+--
+
+CREATE TABLE `mission` (
+  `id` int(11) NOT NULL,
+  `id_vehicule` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `id_lieu_depart` int(11) NOT NULL,
+  `id_lieu_arrive` int(11) NOT NULL,
+  `motif` enum('maraude','livraison','repas','demenagement','personnel') NOT NULL,
+  `date_depart` date NOT NULL,
+  `date_arrivee` date NOT NULL,
+  `km_depart` int(11) NOT NULL,
+  `km_arrive` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déclencheurs `mission`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_mission_dates_bi` BEFORE INSERT ON `mission` FOR EACH ROW BEGIN
+  IF NEW.date_arrivee < NEW.date_depart THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date d arrivée est antérieur à celle de départ. Veuillez resaisir votre date.";
+  END IF;
+  IF NEW.date_depart > CURRENT_DATE() THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ="La date de départ est ultérieur à aujourd hui. Veuillez resaisir votre date.";
+  END IF;
+  IF NEW.km_arrive < NEW.km_depart THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Le kilométrage d arrivé est plus petit que celui de départ. Veuillez resaisir votre nombre.";
+  END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `trg_mission_dates_bu` BEFORE UPDATE ON `mission` FOR EACH ROW BEGIN
+  IF NEW.date_arrivee < NEW.date_depart THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date d arrivée est antérieur à celle de départ. Veuillez resaisir votre date.";
+  END IF;
+  IF NEW.date_depart > CURRENT_DATE() THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ="La date de départ est ultérieur à aujourd hui. Veuillez resaisir votre date.";
+  END IF;
+  IF NEW.km_arrive < NEW.km_depart THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Le kilométrage d arrivé est plus petit que celui de départ. Veuillez resaisir votre nombre.";
+  END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `permis`
+--
+
+CREATE TABLE `permis` (
+  `id_user` int(11) NOT NULL,
+  `num_permis` char(12) NOT NULL,
+  `date_permis` date NOT NULL,
+  `update_permis` date NOT NULL,
+  `type_permis` enum('B','BE','C','C1','C1E') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `permis`
+--
+
+INSERT INTO `permis` (`id_user`, `num_permis`, `date_permis`, `update_permis`, `type_permis`) VALUES
+(1, '1234567888', '2025-06-01', '2038-11-03', 'C'),
+(2, '1234567900', '2025-09-04', '2025-09-28', 'C');
+
+--
+-- Déclencheurs `permis`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_permis_update_date_bu` BEFORE UPDATE ON `permis` FOR EACH ROW BEGIN
   IF NEW.update_permis < OLD.update_permis THEN
     SIGNAL SQLSTATE '45000' 
       SET MESSAGE_TEXT = "La date de péremption du permis est antérieur à l ancienne. Veuillez resaisir votre date.";
   END IF;
-END//
+END
+$$
 DELIMITER ;
 
+-- --------------------------------------------------------
 
-CREATE TABLE `historique` (
-  `id_user` INT(11) NOT NULL,
-  `id_ip` INT(11) NOT NULL,
-  `date_dbt` TIMESTAMP NOT NULL,
-  `date_fin` TIMESTAMP NOT NULL,
-  PRIMARY KEY (`id_user`,`date_dbt`),
-  KEY `FK_user` (`id_user`),
-  KEY `FK_ip` (`id_ip`) USING BTREE,
-  CONSTRAINT `fk_ip` FOREIGN KEY (`id_ip`) REFERENCES `Ip` (`id`),
-  CONSTRAINT `historique_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-LOCK TABLES `historique` WRITE;
-UNLOCK TABLES;
-
+--
+-- Structure de la table `suivi`
+--
 
 CREATE TABLE `suivi` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `id_incident` INT(11) NOT NULL,
-  `date_intervention` DATE NOT NULL,
-  `description` TEXT NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `id_incident` (`id_incident`),
-  CONSTRAINT `suivi_ibfk_1` FOREIGN KEY (`id_incident`) REFERENCES `incident` (`id`)
+  `id` int(11) NOT NULL,
+  `id_incident` int(11) NOT NULL,
+  `date_intervention` date NOT NULL,
+  `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-LOCK TABLES `suivi` WRITE;
-UNLOCK TABLES;
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `type_incident`
+--
+
+CREATE TABLE `type_incident` (
+  `id` int(11) NOT NULL,
+  `nom` varchar(255) NOT NULL,
+  `critique` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `type_incident`
+--
+
+INSERT INTO `type_incident` (`id`, `nom`, `critique`) VALUES
+(1, 'Accident', 1),
+(2, 'Panne', 0),
+(3, 'Fuite', 0),
+(4, 'Défectuosité', 0),
+(5, 'Problème technique', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `user`
+--
+
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL,
+  `nom` varchar(50) NOT NULL,
+  `prenom` varchar(50) NOT NULL,
+  `admin` tinyint(1) NOT NULL DEFAULT 0,
+  `telephone` char(10) NOT NULL,
+  `mail` varchar(100) NOT NULL,
+  `actif` tinyint(1) NOT NULL DEFAULT 1,
+  `clef_connexion` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `user`
+--
+
+INSERT INTO `user` (`id`, `nom`, `prenom`, `admin`, `telephone`, `mail`, `actif`, `clef_connexion`) VALUES
+(1, 'TOTO', 'TATA', 0, '0123456789', 'toto@gmail.com', 1, 'b188f429056f143854354596583bef63caaa3b18d697f7d4a12b28df6ac44d11'),
+(2, 'TITI', 'TUTU', 1, '9876543210', 'titi@gmail.com', 1, 'f5930a61102629c152e9d741fae0105207d834ed2bb09a2d5b5ea127cf6ccb6a');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `vehicule`
+--
+
+CREATE TABLE `vehicule` (
+  `id` int(11) NOT NULL,
+  `plaque` char(255) NOT NULL,
+  `marque` varchar(50) NOT NULL,
+  `modele` varchar(50) NOT NULL,
+  `date_achat` date NOT NULL,
+  `date_immat` date NOT NULL,
+  `ct` date NOT NULL,
+  `actif` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `vehicule`
+--
+
+INSERT INTO `vehicule` (`id`, `plaque`, `marque`, `modele`, `date_achat`, `date_immat`, `ct`, `actif`) VALUES
+(1, 'BC-234-DE', 'Peugeot', '208', '2021-05-31', '2021-05-31', '2031-05-22', 1),
+(2, 'AC-128-SG', 'CITROEN', 'C3', '2025-10-16', '2025-10-31', '2025-11-01', 0);
+
+--
+-- Déclencheurs `vehicule`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_vehicule_date_achat_bi` BEFORE INSERT ON `vehicule` FOR EACH ROW BEGIN
+  IF NEW.date_achat > CURRENT_DATE() THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date d'achat est ultérieur à aujourd'hui. Veuillez resaisir votre date.";
+  END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `trg_vehicule_date_achat_bu` BEFORE UPDATE ON `vehicule` FOR EACH ROW BEGIN
+  IF NEW.date_achat > CURRENT_DATE() THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date d'achat est ultérieur à aujourd'hui. Veuillez resaisir votre date.";
+  END IF;
+END
+$$
+DELIMITER ;
+
+--
+-- Index pour les tables déchargées
+--
+
+--
+-- Index pour la table `assurance`
+--
+ALTER TABLE `assurance`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `assurance_vehicule`
+--
+ALTER TABLE `assurance_vehicule`
+  ADD PRIMARY KEY (`id_assurance`,`id_vehicule`),
+  ADD KEY `id_vehicule` (`id_vehicule`);
+
+--
+-- Index pour la table `historique`
+--
+ALTER TABLE `historique`
+  ADD PRIMARY KEY (`id_user`,`date_dbt`),
+  ADD KEY `FK_user` (`id_user`),
+  ADD KEY `FK_ip` (`id_ip`) USING BTREE;
+
+--
+-- Index pour la table `incident`
+--
+ALTER TABLE `incident`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FK_camion` (`id_vehicule`),
+  ADD KEY `id_user` (`id_user`),
+  ADD KEY `id_type_accident` (`id_type_incident`);
+
+--
+-- Index pour la table `infraction`
+--
+ALTER TABLE `infraction`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FK_trajet` (`id_mission`);
+
+--
+-- Index pour la table `Ip`
+--
+ALTER TABLE `Ip`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `adresse_ip` (`adresse_ip`);
+
+--
+-- Index pour la table `lieu`
+--
+ALTER TABLE `lieu`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `mission`
+--
+ALTER TABLE `mission`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FK_camion` (`id_vehicule`),
+  ADD KEY `FK_user` (`id_user`),
+  ADD KEY `FK_lieu_depart` (`id_lieu_depart`),
+  ADD KEY `FK_lieu_arrive` (`id_lieu_arrive`);
+
+--
+-- Index pour la table `permis`
+--
+ALTER TABLE `permis`
+  ADD PRIMARY KEY (`id_user`),
+  ADD UNIQUE KEY `UNIQUE_num_permis` (`num_permis`) USING BTREE;
+
+--
+-- Index pour la table `suivi`
+--
+ALTER TABLE `suivi`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_incident` (`id_incident`);
+
+--
+-- Index pour la table `type_incident`
+--
+ALTER TABLE `type_incident`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `vehicule`
+--
+ALTER TABLE `vehicule`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `UNIQUE_plaque` (`plaque`) USING BTREE;
+
+--
+-- AUTO_INCREMENT pour les tables déchargées
+--
+
+--
+-- AUTO_INCREMENT pour la table `assurance`
+--
+ALTER TABLE `assurance`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT pour la table `incident`
+--
+ALTER TABLE `incident`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `infraction`
+--
+ALTER TABLE `infraction`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `Ip`
+--
+ALTER TABLE `Ip`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT pour la table `lieu`
+--
+ALTER TABLE `lieu`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT pour la table `suivi`
+--
+ALTER TABLE `suivi`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `type_incident`
+--
+ALTER TABLE `type_incident`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT pour la table `user`
+--
+ALTER TABLE `user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT pour la table `vehicule`
+--
+ALTER TABLE `vehicule`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- Contraintes pour les tables déchargées
+--
+
+--
+-- Contraintes pour la table `assurance_vehicule`
+--
+ALTER TABLE `assurance_vehicule`
+  ADD CONSTRAINT `assurance_vehicule_ibfk_1` FOREIGN KEY (`id_assurance`) REFERENCES `assurance` (`id`),
+  ADD CONSTRAINT `assurance_vehicule_ibfk_2` FOREIGN KEY (`id_vehicule`) REFERENCES `vehicule` (`id`);
+
+--
+-- Contraintes pour la table `historique`
+--
+ALTER TABLE `historique`
+  ADD CONSTRAINT `fk_ip` FOREIGN KEY (`id_ip`) REFERENCES `Ip` (`id`),
+  ADD CONSTRAINT `historique_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`);
+
+--
+-- Contraintes pour la table `incident`
+--
+ALTER TABLE `incident`
+  ADD CONSTRAINT `incident_ibfk_1` FOREIGN KEY (`id_vehicule`) REFERENCES `vehicule` (`id`),
+  ADD CONSTRAINT `incident_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`),
+  ADD CONSTRAINT `incident_ibfk_3` FOREIGN KEY (`id_type_incident`) REFERENCES `type_incident` (`id`);
+
+--
+-- Contraintes pour la table `infraction`
+--
+ALTER TABLE `infraction`
+  ADD CONSTRAINT `infraction_ibfk_1` FOREIGN KEY (`id_mission`) REFERENCES `mission` (`id`);
+
+--
+-- Contraintes pour la table `mission`
+--
+ALTER TABLE `mission`
+  ADD CONSTRAINT `mission_ibfk_1` FOREIGN KEY (`id_vehicule`) REFERENCES `vehicule` (`id`),
+  ADD CONSTRAINT `mission_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`),
+  ADD CONSTRAINT `mission_ibfk_3` FOREIGN KEY (`id_lieu_depart`) REFERENCES `lieu` (`id`),
+  ADD CONSTRAINT `mission_ibfk_4` FOREIGN KEY (`id_lieu_arrive`) REFERENCES `lieu` (`id`);
+
+--
+-- Contraintes pour la table `permis`
+--
+ALTER TABLE `permis`
+  ADD CONSTRAINT `permis_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`);
+
+--
+-- Contraintes pour la table `suivi`
+--
+ALTER TABLE `suivi`
+  ADD CONSTRAINT `suivi_ibfk_1` FOREIGN KEY (`id_incident`) REFERENCES `incident` (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
