@@ -31,22 +31,23 @@ class MissionController extends Controller
 		$search = $this->request->getGet('q');
 
 		// Query to get datas from other table
-		$builder = $this->model->select('mission.id, vehicule.plaque, CONCAT(user.nom, " ", user.prenom) AS conducteur, l1.nom_lieu AS nom_lieu_depart, l1.numero AS numero_depart, l1.adresse AS adresse_depart, l2.numero AS numero_arrive, l2.adresse AS adresse_arrivee, l2.nom_lieu AS nom_lieu_arrive, motif, date_depart, date_arrivee, km_depart, km_arrive')
+		$builder = $this->model->select('mission.id, vehicule.plaque, CONCAT(user.nom, " ", user.prenom) AS conducteur, l1.nom_lieu AS nom_lieu_depart, l1.numero AS numero_depart, l1.adresse AS adresse_depart, l2.numero AS numero_arrive, l2.adresse AS adresse_arrivee, l2.nom_lieu AS nom_lieu_arrive, trajet.motif, trajet.date_debut, trajet.date_arrivee, trajet.km_depart, trajet.km_arrive')
 			 ->join('vehicule', 'vehicule.id = mission.id_vehicule', 'left')
 			 ->join('user', 'user.id = mission.id_user', 'left')
-			 ->join('lieu l1', 'l1.id = mission.id_lieu_depart', 'left')
-			 ->join('lieu l2', 'l2.id = mission.id_lieu_arrive', 'left')
-			 ->orderBy('mission.date_depart', 'DESC');
+			 ->join('trajet', 'trajet.id = mission.id_trajet', 'left')
+			 ->join('lieu l1', 'l1.id = trajet.id_lieu_depart', 'left')
+			 ->join('lieu l2', 'l2.id = trajet.id_lieu_arrive', 'left')
+			 ->orderBy('trajet.date_debut', 'DESC');
 
 		if ($search)
 		{
 			$builder->groupStart()
 				->like('vehicule.plaque', $search)
 				->orLike('CONCAT(user.nom, " ", user.prenom)', $search)
-				->orLike('DATE_FORMAT(mission.date_depart, "%d/%m/%Y")', $search)
+				->orLike('DATE_FORMAT(trajet.date_debut, "%d/%m/%Y")', $search)
 				->groupEnd();
 
-			$builder->orderBy('mission.date_depart', 'DESC');
+			$builder->orderBy('trajet.date_debut', 'DESC');
 		}
 		else
 		{
