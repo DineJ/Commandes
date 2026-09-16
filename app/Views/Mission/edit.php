@@ -32,24 +32,24 @@
 	<label for="id_lieu_depart">Lieu de départ</label>
 	<select id="id_lieu_depart" name="id_lieu_depart" class="form-control" required>
 		<?php foreach($lieuxDepart as $l1): ?>
-			<option value="<?= $l1->id ?>" <?= (isset($item) && $item->id_lieu_depart == $l1->id) ? 'selected' : '' ?>>
+			<option value="<?= $l1->id ?>" <?= (isset($trajet) && $trajet->id_lieu_depart == $l1->id) ? 'selected' : '' ?>>
 				<?= esc($l1->numero) . ' ' . esc($l1->adresse) . ' ' . esc($l1->nom_lieu) ?>
 			</option>
 		<?php endforeach; ?>
 	</select>
-	<input type="hidden" id="oldid_lieu_depart" name="oldid_lieu_depart" value="<?= isset($item) ? $item->id_lieu_depart : '' ?>">
+	<input type="hidden" id="oldid_lieu_depart" name="oldid_lieu_depart" value="<?= isset($trajet) ? $trajet->id_lieu_depart : '' ?>">
 
 
 	<!-- Display end location -->
 	<label for="id_lieu_arrive">Lieu arrivé</label>
 	<select id="id_lieu_arrive" name="id_lieu_arrive" class="form-control" required>
 		<?php foreach($lieuxArrive as $l2): ?>
-			<option value="<?= $l2->id ?>" <?= (isset($item) && $item->id_lieu_arrive == $l2->id) ? 'selected' : '' ?>>
+			<option value="<?= $l2->id ?>" <?= (isset($trajet) && $trajet->id_lieu_arrive == $l2->id) ? 'selected' : '' ?>>
 				<?= esc($l2->numero) . ' ' . esc($l2->adresse) . ' ' . esc($l2->nom_lieu) ?>
 			</option>
 		<?php endforeach; ?>
 	</select>
-	<input type="hidden" id="oldid_lieu_arrive" name="oldid_lieu_arrive" value="<?= isset($item) ? $item->id_lieu_arrive : '' ?>">
+	<input type="hidden" id="oldid_lieu_arrive" name="oldid_lieu_arrive" value="<?= isset($trajet) ? $trajet->id_lieu_arrive : '' ?>">
 
 
 	<!-- Select reasons of the travel -->
@@ -59,17 +59,17 @@
 			<option value="<?= esc($m) ?>"><?= esc($m) ?></option>
 		<?php endforeach; ?>
 	</select>
-	<input type="hidden" id="oldmotif" name="oldmotif" value="<?= isset($item) ? $item->motif : '' ?>">
+	<input type="hidden" id="oldmotif" name="oldmotif" value="<?= isset($trajet) ? $trajet->motif : '' ?>">
 
 	<!-- Select start Km -->
 	<label>Km de départ</label>
-	<input type="number" id="km_depart" name="km_depart" value="<?= isset($item) ? $item->km_depart : '' ?>" class="form-control" required>
-	<input type="hidden" id="oldkm_depart" name="oldkm_depart" value="<?= isset($item) ? $item->km_depart : '' ?>">
+	<input type="number" id="km_depart" name="km_depart" value="<?= isset($trajet) ? $trajet->km_depart : '' ?>" class="form-control" required>
+	<input type="hidden" id="oldkm_depart" name="oldkm_depart" value="<?= isset($trajet) ? $trajet->km_depart : '' ?>">
 
 	<!-- Select end Km -->
 	<label>Km arrivé</label>
-	<input type="number" id="km_arrive" name="km_arrive" value="<?= isset($item) ? $item->km_arrive : '' ?>" class="form-control" required>
-	<input type="hidden" id="oldkm_arrive" name="oldkm_arrive" value="<?= isset($item) ? $item->km_arrive : '' ?>">
+	<input type="number" id="km_arrive" name="km_arrive" value="<?= isset($trajet) ? $trajet->km_arrive : '' ?>" class="form-control" required>
+	<input type="hidden" id="oldkm_arrive" name="oldkm_arrive" value="<?= isset($trajet) ? $trajet->km_arrive : '' ?>">
 
 	<!-- Redirection button -->
 	<a href="<?= site_url('Mission/show/' .$item->id) ?>" class="btn btn-secondary mt-3">Retour</a>
