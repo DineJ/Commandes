@@ -18,8 +18,8 @@ class AdminController extends Controller
 
 	public function __construct()
 	{
+		// Load the model
 		$this->ipModel = new IpModel();
-		// Load the umodel
 		$this->model = new UserModel();
 		$this->vehiculeModel = new VehiculeModel();
 		$this->lieuModel = new LieuModel();
@@ -72,17 +72,18 @@ class AdminController extends Controller
 			->getResult();
 
 		$data['mission'] = $this->missionModel
-			  ->select('CONCAT(user.nom, " ", user.prenom) AS Conducteur, vehicule.plaque AS Plaque, motif AS Motif, l1.surnom AS `Lieu départ`, CONCAT(l1.numero, " ", l1.adresse, " ", l1.nom_lieu, " ", l1.code_postal) AS `Adresse départ`, mission.date_depart AS Début, l2.surnom AS `Lieu arrivé`, CONCAT(l2.numero, " ", l2.adresse, " ", l2.nom_lieu, " ", l2.code_postal) AS `Adresse arrivé`,
+			  ->select('CONCAT(user.nom, " ", user.prenom) AS Conducteur, vehicule.plaque AS Plaque, trajet.motif AS Motif, l1.surnom AS `Lieu départ`, CONCAT(l1.numero, " ", l1.adresse, " ", l1.nom_lieu, " ", l1.code_postal) AS `Adresse départ`, trajet.date_debut AS Début, l2.surnom AS `Lieu arrivé`, CONCAT(l2.numero, " ", l2.adresse, " ", l2.nom_lieu, " ", l2.code_postal) AS `Adresse arrivé`,
 			CASE
-				WHEN mission.date_arrivee = mission.date_depart
+				WHEN trajet.date_arrivee = trajet.date_debut
 				THEN "En cours"
-			ELSE mission.date_arrivee
+			ELSE trajet.date_arrivee
 			END AS Fin', false)
 			->join('user', 'user.id = mission.id_user', 'left')
 			->join('vehicule', 'vehicule.id = mission.id_vehicule', 'left')
-			->join('lieu l1', 'l1.id = mission.id_lieu_depart', 'left')
-			->join('lieu l2', 'l2.id = mission.id_lieu_arrive', 'left')
-			->orderBy('mission.date_depart', 'DESC')
+			->join('trajet', 'trajet.id = mission.id_trajet', 'left')
+			->join('lieu l1', 'l1.id = trajet.id_lieu_depart', 'left')
+			->join('lieu l2', 'l2.id = trajet.id_lieu_arrive', 'left')
+			->orderBy('trajet.date_debut', 'DESC')
 			->get()
 			->getResult();
 
