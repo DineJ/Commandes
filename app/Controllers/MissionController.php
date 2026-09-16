@@ -8,6 +8,7 @@ use App\Models\UserModel;
 use App\Models\LieuModel;
 use App\Models\InfractionModel;
 use App\Models\IncidentModel;
+use App\Models\TrajetModel;
 use App\Entities\Mission;
 use CodeIgniter\Controller;
 
@@ -23,6 +24,7 @@ class MissionController extends Controller
 		$this->lieuModel = new LieuModel();
 		$this->infractionModel = new InfractionModel();
 		$this->incidentModel = new IncidentModel();
+		$this->trajetModel = new TrajetModel();
 	}
 
 	// SEARCH BAR
@@ -67,12 +69,15 @@ class MissionController extends Controller
 		//load helper
 		helper('section');
 
+		// Get Datas
 		$data['item'] = $this->model->find($id);
 		$data['infractions'] = $this->infractionModel->where('infraction.id_mission', $id)->find($data['item']->id_mission);
 		$data['vehicule'] = $this->vehiculeModel->find($data['item']->id_vehicule);
 		$data['utilisateur'] = $this->userModel->find($data['item']->id_user);
-		$data['lieuDepart'] = $this->lieuModel->find($data['item']->id_lieu_depart);
-		$data['lieuArrive'] = $this->lieuModel->find($data['item']->id_lieu_arrive);
+		$data['trajet'] = $this->trajetModel->find($data['item']->id_trajet);
+		$data['lieuDepart'] = $this->lieuModel->find($data['trajet']->id_lieu_depart);
+		$data['lieuArrive'] = $this->lieuModel->find($data['trajet']->id_lieu_arrive);
+
 		return view('Mission/show', $data);
 	}
 

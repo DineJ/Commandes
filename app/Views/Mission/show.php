@@ -35,31 +35,31 @@
 			<!-- Display reasons of the travel -->
 			<tr>
 				<td class="td-hidden">Motif</td>
-				<td data-label="Motif"><?= esc($item->motif) ?></td>
+				<td data-label="Motif"><?= esc($trajet->motif) ?></td>
 			</tr>
 
 			<!-- Display starting date -->
 			<tr>
 				<td class="td-hidden">Date départ</td>
-				<td data-label="Date départ"><?= date('d/m/Y H:i', strtotime($item->date_depart)) ?></td>
+				<td data-label="Date départ"><?= date('d/m/Y H:i', strtotime($trajet->date_debut)) ?></td>
 			</tr>
 
 			<!-- Display ending date -->
 			<tr>
 				<td class="td-hidden">Date arrivée</td>
-				<td data-label="Date arrivée"><?= date('d/m/Y H:i', strtotime($item->date_arrivee)) ?></td>
+				<td data-label="Date arrivée"><?= date('d/m/Y H:i', strtotime($trajet->date_arrivee)) ?></td>
 			</tr>
 
 			<!-- Display starting Km -->
 			<tr>
 				<td class="td-hidden">Km de départ</td>
-				<td data-label="Km de départ"><?= $item->km_depart ?></td>
+				<td data-label="Km de départ"><?= $trajet->km_depart ?></td>
 			</tr>
 
 			<!-- Display ending Km-->
 			<tr>
 				<td class="td-hidden">Km arrivé</td>
-				<td data-label="Km arrivé"><?= $item->km_arrive ?></td>
+				<td data-label="Km arrivé"><?= $trajet->km_arrive ?></td>
 			</tr>
 		</tbody>
 	</table>
