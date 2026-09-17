@@ -122,18 +122,35 @@ class MissionController extends Controller
 	// UPDATE DATABASE
 	public function update($id)
 	{
-		$date = date('Y-m-d H:i:s');
 		$data = $this->request->getPost();
-		$entity = $this->model->find($id);
-		$entity->fill($data);
-		$entity->setdateArrivee($date);
 
-		if (!$this->model->save($entity))
+		// Mission updating datas
+		$mission = $this->model->find($id);
+		$mission->id_user = $data['id_user'];
+		$mission->id_vehicule = $data['id_vehicule'];
+		#dd($mission);
+
+		// Trajet updating datas
+		$trajet = $this->trajetModel->find($mission->id_trajet);
+		$trajet->id_lieu_depart  = $data['id_lieu_depart'];
+		$trajet->id_lieu_arrive = $data['id_lieu_arrive'];
+		$trajet->motif = $data['motif'];
+		$trajet->km_depart  = $data['km_depart'];
+		$trajet->km_arrive = $data['km_arrive'];
+
+		dd($trajet);
+
+		// Savings trajet's datas into the DB
+		if (!$this->trajetModel->save($trajet))
 		{
 			return redirect()->back()->with('error', 'Erreur lors de la mise à jour.');
 		}
 
-		return redirect()->to('/Mission');
+		#if (!$this->model->save($mission))
+		{
+		#	return redirect()->back()->with('error', 'Erreur lors de la mise à jour.');
+		}
+		return redirect()->to('/Assurance');
 	}
 
 
