@@ -22,7 +22,7 @@ class SessionEnd implements FilterInterface
 		$lastActivity = $session->get('last_activity');
 
 		// If inactive for more than 5 minutes, destroy session and redirect
-		if ($lastActivity && (time() - $lastActivity > 30000000))
+		if ($lastActivity && (time() - $lastActivity > 300))
 		{
 			$session->destroy();
 			return redirect()->to('/Login');
