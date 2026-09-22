@@ -18,9 +18,30 @@ class TrajetController extends Controller
 	// SEARCH BAR
 	public function index()
 	{
-		
-		$data['items'] = $this->model->paginate(5); // Display 5 results
-		$data['pager'] = $this->model->pager; // Add pager
+		// Query
+		$search = $this->request->getGet('q');
+
+		// Query builder
+		$builder = $this->model
+			->select('trajet.id, l1.surnom AS surnom_depart, l2.surnom AS surnom_arrive, trajet.date_debut, trajet.date_arrivee, trajet.motif, trajet.km_depart, trajet.km_arrive')
+			->join('lieu AS l1', 'trajet.id_lieu_depart = l1.id', 'left')
+			->join('lieu AS l2', 'trajet.id_lieu_arrive = l2.id', 'left')
+			->orderBy('trajet.date_debut');
+
+		// Search bar for query
+		if ($search)
+		{
+			$query = '%'.$search.'%';
+			$builder->like('nom_lieu', $query)
+						->orLike('adresse', $query)
+						->orLike('surnom', $query)
+						->orderBy('id');
+		}
+
+		$data['search'] = $search;
+		$data['items'] = $this->model->paginate(20); // Display 20 results
+		$data['pager'] = $builder->pager; // Add pager
+		$data['page'] = 'index';
 
 		return view('Trajet/index', $data);
 	}
