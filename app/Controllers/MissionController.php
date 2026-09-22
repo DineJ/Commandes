@@ -122,37 +122,62 @@ class MissionController extends Controller
 	// UPDATE DATABASE
 	public function update($id)
 	{
+		// Retrieve submitted form data
 		$data = $this->request->getPost();
 
-		// Mission updating datas
+		// Get the mission
 		$mission = $this->model->find($id);
-		$mission->id_user = $data['id_user'];
-		$mission->id_vehicule = $data['id_vehicule'];
-		#dd($mission);
 
-		// Trajet updating datas
+		// List of mission fields that can be updated
+		$missionFields = ['id_user','id_vehicule'];
+
+		// Flag
+		$missionUpdated = false;
+
+		foreach ($missionFields as $field)
+		{
+			// Update the field only if the new value is different
+			if (isset($data[$field]) && $mission->$field != $data[$field])
+			{
+				$mission->$field = $data[$field];
+				$missionUpdated = true;
+			}
+		}
+
+		// Save the mission only if at least one field has changed
+		if ($missionUpdated)
+		{
+			$this->model->save($mission);
+		}
+
+		// Get the journey
 		$trajet = $this->trajetModel->find($mission->id_trajet);
-		$trajet->id_lieu_depart  = $data['id_lieu_depart'];
-		$trajet->id_lieu_arrive = $data['id_lieu_arrive'];
-		$trajet->motif = $data['motif'];
-		$trajet->km_depart  = $data['km_depart'];
-		$trajet->km_arrive = $data['km_arrive'];
 
-		dd($trajet);
+		// List of trajet fields that can be updated
+		$trajetFields = ['id_lieu_depart','id_lieu_arrive','motif','km_depart','km_arrive'];
 
-		// Savings trajet's datas into the DB
-		if (!$this->trajetModel->save($trajet))
+		// Flag
+		$trajetUpdated = false;
+
+		foreach ($trajetFields as $field)
 		{
-			return redirect()->back()->with('error', 'Erreur lors de la mise à jour.');
+			// Update the field only if the new value is different
+			if (isset($data[$field]) && $trajet->$field != $data[$field])
+			{
+				$trajet->$field = $data[$field];
+				$trajetUpdated = true;
+			}
 		}
 
-		#if (!$this->model->save($mission))
+		// Save the trajet only if at least one field has changed
+		if ($trajetUpdated)
 		{
-		#	return redirect()->back()->with('error', 'Erreur lors de la mise à jour.');
+			$this->trajetModel->save($trajet);
 		}
-		return redirect()->to('/Assurance');
+
+		// Redirect back to the mission list
+		return redirect()->to('/Mission');
 	}
-
 
 	// DELETE AN ELEMENT
 	public function delete($id)
