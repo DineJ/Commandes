@@ -191,22 +191,24 @@ class MissionController extends Controller
 	{
 		// Get lastest mission for EACH vehicles
 		$data['vehicules'] = $this->vehiculeModel
-					  ->select('vehicule.plaque, vehicule.id, COALESCE(mission.km_arrive,0) as km_depart')
+					  ->select('vehicule.plaque, vehicule.id, COALESCE(trajet.km_arrive,0) AS km_depart')
 					  ->join('mission', 'mission.id = (
 														SELECT MAX(m2.id)
 														FROM mission m2
 														WHERE m2.id_vehicule = vehicule.id)',
 														'left',false)
+					  ->join('trajet', 'trajet.id = mission.id_trajet', 'left')
 					  ->findAll();
 
 		$data['lieux'] = $this->lieuModel->findAll();
-		$data['motifs'] = $this->model->getMotifEnum();
+		$data['motifs'] = $this->trajetModel->getMotifEnum();
 		$data['item'] = $this->model;
 
 		$missionsPending = $this->model
 			->select('mission.id_user, mission.id_vehicule, CONCAT(user.nom, " ", user.prenom) AS conducteur')
 			->join('user', 'user.id = mission.id_user', 'left')
-			->where('mission.date_depart = mission.date_arrivee', null, false)
+			->join('trajet', 'trajet.id = mission.id_trajet', 'left')
+			->where('trajet.date_debut = trajet.date_arrivee', null, false)
 			->findAll();
 
 		$vehiclesUsed = [];
@@ -218,9 +220,10 @@ class MissionController extends Controller
 		$data['vehiclesUsed'] = $vehiclesUsed;
 
 		$redirection = $this->model
-			->select('mission.date_depart, mission.date_arrivee')
+			->select('trajet.date_debut, trajet.date_arrivee')
+			->join('trajet', 'trajet.id = mission.id_trajet', 'left')
 			->where('mission.id_user', session()->get('user')['id'])
-			->where('mission.date_depart = mission.date_arrivee', null, false)
+			->where('trajet.date_debut = trajet.date_arrivee', null, false)
 			->findAll();
 
 		if($redirection)
