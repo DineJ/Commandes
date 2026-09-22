@@ -169,11 +169,12 @@ class IncidentController extends Controller
 	public function debut()
 	{
 		$data['typeIncident'] = $this->typeIncidentModel->findAll();
-		$data['vehicule'] = $this->vehiculeModel->findAll();
+		$data['vehicule'] = $this->vehiculeModel->orderBy('vehicule.plaque', 'ASC')->findAll();
 		$data['mission'] = $this->missionModel
+					->join('trajet', 'trajet.id = mission.id_trajet', 'left')
 					->where('id_user', session()->get('user')['id'])
-					->where('date_depart = date_arrivee', null, false)
-					->orderBy('date_depart', 'DESC')
+					->where('trajet.date_debut = trajet.date_arrivee', null, false)
+					->orderBy('trajet.date_debut', 'DESC')
 					->limit(1)
 					->findAll();
 
