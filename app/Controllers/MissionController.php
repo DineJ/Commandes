@@ -122,20 +122,62 @@ class MissionController extends Controller
 	// UPDATE DATABASE
 	public function update($id)
 	{
-		$date = date('Y-m-d H:i:s');
+		// Retrieve submitted form data
 		$data = $this->request->getPost();
-		$entity = $this->model->find($id);
-		$entity->fill($data);
-		$entity->setdateArrivee($date);
 
-		if (!$this->model->save($entity))
+		// Get the mission
+		$mission = $this->model->find($id);
+
+		// List of mission fields that can be updated
+		$missionFields = ['id_user','id_vehicule'];
+
+		// Flag
+		$missionUpdated = false;
+
+		foreach ($missionFields as $field)
 		{
-			return redirect()->back()->with('error', 'Erreur lors de la mise à jour.');
+			// Update the field only if the new value is different
+			if (isset($data[$field]) && $mission->$field != $data[$field])
+			{
+				$mission->$field = $data[$field];
+				$missionUpdated = true;
+			}
 		}
 
+		// Save the mission only if at least one field has changed
+		if ($missionUpdated)
+		{
+			$this->model->save($mission);
+		}
+
+		// Get the journey
+		$trajet = $this->trajetModel->find($mission->id_trajet);
+
+		// List of trajet fields that can be updated
+		$trajetFields = ['id_lieu_depart','id_lieu_arrive','motif','km_depart','km_arrive'];
+
+		// Flag
+		$trajetUpdated = false;
+
+		foreach ($trajetFields as $field)
+		{
+			// Update the field only if the new value is different
+			if (isset($data[$field]) && $trajet->$field != $data[$field])
+			{
+				$trajet->$field = $data[$field];
+				$trajetUpdated = true;
+			}
+		}
+
+		// Save the trajet only if at least one field has changed
+		if ($trajetUpdated)
+		{
+			$this->trajetModel->save($trajet);
+		}
+
+		// Redirect back to the mission list
 		return redirect()->to('/Mission');
 	}
-
 
 	// DELETE AN ELEMENT
 	public function delete($id)
