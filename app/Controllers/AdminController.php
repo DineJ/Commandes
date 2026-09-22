@@ -108,16 +108,19 @@ class AdminController extends Controller
 		//load helper
 		helper('section');
 
+		// Query to get every datas we need
 		$data['missions'] = $this->missionModel
-					 ->select('mission.id, CONCAT(user.nom, " ", user.prenom) AS nom_complet, mission.id_vehicule, vehicule.plaque, CONCAT(l1.numero, " ", l1.adresse, " ", l1.nom_lieu) AS lieu_depart, CONCAT(l2.numero, " ", l2.adresse, " ", l2.nom_lieu) AS lieu_arrive, mission.motif, mission.date_depart, mission.date_arrivee, mission.km_depart, mission.km_arrive, l1.surnom as Surnom')
+					 ->select('mission.id, CONCAT(user.nom, " ", user.prenom) AS nom_complet, mission.id_vehicule, vehicule.plaque, CONCAT(l1.numero, " ", l1.adresse, " ", l1.nom_lieu) AS lieu_depart, CONCAT(l2.numero, " ", l2.adresse, " ", l2.nom_lieu) AS lieu_arrive, trajet.motif, trajet.date_debut, trajet.date_arrivee, trajet.km_depart, trajet.km_arrive, l1.surnom as Surnom')
 					 ->join('user', 'user.id = mission.id_user', 'left')
+					 ->join('trajet','trajet.id = mission.id_trajet', 'left')
 					 ->join('vehicule', 'vehicule.id = mission.id_vehicule', 'left')
-					 ->join('lieu l1', 'l1.id = mission.id_lieu_depart', 'left')
-					 ->join('lieu l2', 'l2.id = mission.id_lieu_arrive', 'left')
+					 ->join('lieu l1', 'l1.id = trajet.id_lieu_depart', 'left')
+					 ->join('lieu l2', 'l2.id = trajet.id_lieu_arrive', 'left')
 					 ->where('id_user', session()->get('user')['id'])
-					 ->where('mission.date_depart = mission.date_arrivee')
-					 ->orderBy('date_depart', 'DESC')
+					 ->where('trajet.date_debut = trajet.date_arrivee')
+					 ->orderBy('date_debut', 'DESC')
 					 ->findAll();
+
 		return view('Non_admin/home', $data);
 	}
 
