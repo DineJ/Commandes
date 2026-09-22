@@ -80,5 +80,5 @@
 
 
 <script src="<?= base_url('js/validateForm.js') ?>"></script>
-
+<script src="<?= base_url('js/validateKm.js') ?>"></script>
 <?= $this->endSection() ?>
