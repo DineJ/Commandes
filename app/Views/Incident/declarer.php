@@ -10,7 +10,7 @@
 		<!-- Display all vehicles into a list -->
 		<label for="id_vehicule">Véhicule</label>
 		<select id="id_vehicule" name="id_vehicule" onchange="disabledDefault('id_vehicule')" class="form-control" required>
-			<option value=""> Choisir un Véhicule </option>
+			<option value=""> Choisir un véhicule </option>
 			<?php foreach ($vehicule as $v): ?>
 				<option value="<?= $v->id ?>" <?=(isset($item) && esc($item->id_vehicule == $v->id)) ? 'selected' : '' ?>>
 					<?= esc($v->plaque) ?>
@@ -18,7 +18,7 @@
 			<?php endforeach; ?>
 		</select>
 	<?php
-	} 
+	}
 	else
 	{ ?>
 		<input type="hidden" id="id_vehicule" name="id_vehicule" value="<?= esc($mission['0']->id_vehicule) ?>">
