@@ -56,7 +56,9 @@
 	<label for="motif">Motif</label>
 	<select id="motif" name="motif" class="form-control" required>
 		<?php foreach($motifs as $m): ?>
-			<option value="<?= esc($m) ?>"><?= esc($m) ?></option>
+			<option value="<?= esc($m) ?>" <?= (isset($trajet) && $trajet->motif == $m) ? 'selected' : '' ?>>
+				<?= esc($m) ?>
+			</option>
 		<?php endforeach; ?>
 	</select>
 	<input type="hidden" id="oldmotif" name="oldmotif" value="<?= isset($trajet) ? $trajet->motif : '' ?>">
