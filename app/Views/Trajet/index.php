@@ -7,7 +7,7 @@
 <!-- Search bar -->
 <form method="get" action="<?= site_url('Trajet') ?>" class="mb-3">
 	<div class="input-group">
-		<input type="text" name="q" class="form-control" placeholder="Rechercher :  Nom — Prénom " value="<?= isset($search) ?  esc($search) : '' ?>">
+		<input type="text" name="q" class="form-control" placeholder="Rechercher :  Lieux — Date (dd/mm) " value="<?= isset($search) ?  esc($search) : '' ?>">
 		<button type="submit" class="btn btn-primary">Rechercher</button>
 
 		<!-- Reset search bar -->
@@ -23,6 +23,7 @@
 		<!-- Datas name -->
 		<thead>
 			<tr>
+				<th>Ordre</th>
 				<th>Lieu départ</th>
 				<th>Lieu arrivé</th>
 				<th>Date départ</th>
@@ -35,9 +36,11 @@
 		</thead>
 
 		<tbody>
+
 			<!-- Display datas -->
 			<?php foreach ($items as $item): ?>
 				<tr>
+					<td data-label="Ordre"><?= esc($item->ordre) ?></td>
 					<td data-label="Lieu départ"><?= esc($item->surnom_depart) ?></td>
 					<td data-label="Lieu arrivé"><?= esc($item->surnom_arrive) ?></td>
 					<td data-label="Date départ"><?= esc(date('d/m/Y H:i:s', strtotime($item->date_debut))) ?></td>
