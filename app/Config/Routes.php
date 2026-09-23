@@ -3,6 +3,16 @@
 use CodeIgniter\Router\RouteCollection;
 // Auto-generated routes
 
+// Routes for Itineraire
+$routes->get('Itineraire', 'ItineraireController::index');
+$routes->get('Itineraire/show/(:num)', 'ItineraireController::show/$1');
+$routes->get('Itineraire/create', 'ItineraireController::create');
+$routes->post('Itineraire/store', 'ItineraireController::store');
+$routes->get('Itineraire/edit/(:num)', 'ItineraireController::edit/$1');
+$routes->post('Itineraire/update/(:num)', 'ItineraireController::update/$1');
+$routes->get('Itineraire/delete/(:num)', 'ItineraireController::delete/$1');
+
+
 $routes->group('', ['filter' => 'Redirection:admin'], function($routes)
 {
 
