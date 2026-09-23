@@ -3,16 +3,19 @@
 namespace App\Controllers;
 
 use App\Models\TrajetModel;
+use App\Models\LieuModel;
 use App\Entities\Trajet;
 use CodeIgniter\Controller;
 
 class TrajetController extends Controller
 {
 	protected $model;
+	protected $lieuModel;
 
 	public function __construct()
 	{
 		$this->model = new TrajetModel();
+		$this->lieuModel = new LieuModel();
 	}
 
 	// SEARCH BAR
@@ -59,6 +62,7 @@ class TrajetController extends Controller
 	public function create()
 	{
 		$data['title'] = "Créer Trajet";
+		$data['lieux'] = $this->lieuModel->findAll();
 		return view('Trajet/create', $data);
 	}
 
