@@ -34,11 +34,10 @@ class TrajetController extends Controller
 		// Search bar for query
 		if ($search)
 		{
-			$query = '%'.$search.'%';
-			$builder->like('nom_lieu', $query)
-						->orLike('adresse', $query)
-						->orLike('surnom', $query)
-						->orderBy('id');
+			$builder->like('l1.surnom', $search)
+						->orLike('l2.surnom', $search)
+						->orLike("DATE_FORMAT(trajet.date_debut, '%d/%m')", $search, 'both')
+						->orderBy('trajet.id');
 		}
 
 		$data['search'] = $search;

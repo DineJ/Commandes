@@ -4,6 +4,19 @@
 <h2>Liste des Trajets</h2>
 <a href="<?= site_url('Trajet/create') ?>" class="btn btn-success">Ajouter</a>
 
+<!-- Search bar -->
+<form method="get" action="<?= site_url('Trajet') ?>" class="mb-3">
+	<div class="input-group">
+		<input type="text" name="q" class="form-control" placeholder="Rechercher :  Nom — Prénom " value="<?= isset($search) ?  esc($search) : '' ?>">
+		<button type="submit" class="btn btn-primary">Rechercher</button>
+
+		<!-- Reset search bar -->
+		<?php if (!empty($search)) : ?>
+			<a href="<?= site_url('Trajet') ?>" class="btn btn-outline-secondary">Réinitialiser</a>
+		<?php endif; ?>
+	</div>
+</form>
+
 <div class="table-responsive">
 	<table class="table table-striped table-bordered mt-3">
 
