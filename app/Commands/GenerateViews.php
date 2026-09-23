@@ -295,7 +295,11 @@ EOD;
 	private function getOptions($field, $entityName)
 	{
 		$options = "";
-		$query = $this->db->query("SHOW COLUMNS FROM permis WHERE Field LIKE 'type_permis';");
+
+		// Convert entity name to database table name
+		$tableName = strtolower($entityName);
+
+		$query = $this->db->query("SHOW COLUMNS FROM {$tableName} WHERE Field = ?",[$field->name]);
 		$row = $query->getRow();
 		preg_match("/^enum\(\'(.*)\'\)$/", $row->Type, $matches);
 		$enum_values = $this->enum_values = explode("','", $matches[1]);
