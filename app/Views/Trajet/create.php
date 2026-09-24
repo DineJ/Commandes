@@ -58,5 +58,6 @@
 </form>
 
 <script src="<?= base_url('js/main.js') ?>"></script>
+<script src="<?= base_url('js/trajetForm.js') ?>"></script>
 
 <?= $this->endSection() ?>
