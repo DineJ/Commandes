@@ -166,7 +166,7 @@ class TrajetController extends Controller
 		$data['lieux'] = $this->lieuModel->findAll();
 
 		// Get all available motif values
-		$data['motifs'] = $this->model->getMotifEnum();
+		$data['motifs'] = $this->model->getEnumValues('motif');
 
 		$data['title'] = "Modifier Trajet";
 		return view('Trajet/edit', $data);

@@ -11,11 +11,11 @@ class TrajetModel extends Model
 	protected $returnType = 'App\Entities\Trajet';
 	protected $allowedFields = ['id_itineraire', 'id_lieu_depart', 'id_lieu_arrive', 'ordre', 'date_debut', 'date_arrivee', 'motif', 'km_depart', 'km_arrive'];
 
-	public function getMotifEnum()
+	public function getEnumValues($columnName)
 	{
 
-		// Get ENUM values
-		$query = $this->db->query("SHOW COLUMNS FROM {$this->table} LIKE 'motif'");
+		// Get ENUM values from specified column
+		$query = $this->db->query("SHOW COLUMNS FROM {$this->table} LIKE ?",[$columnName]);
 		$row = $query->getRow();
 
 		// Extract values of the ENUM

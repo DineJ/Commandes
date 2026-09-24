@@ -113,7 +113,7 @@ class MissionController extends Controller
 		$data['lieuxDepart'] = $this->lieuModel->findAll();
 		$data['lieuxArrive'] = $this->lieuModel->findAll();
 		$data['trajet'] = $this->trajetModel->find($data['item']->id_trajet);
-		$data['motifs'] = $this->trajetModel->getMotifEnum();
+		$data['motifs'] = $this->trajetModel->getEnumValues('motif');
 		$data['title'] = "Modifier Mission";
 		return view('Mission/edit', $data);
 	}
@@ -201,7 +201,7 @@ class MissionController extends Controller
 					  ->findAll();
 
 		$data['lieux'] = $this->lieuModel->findAll();
-		$data['motifs'] = $this->trajetModel->getMotifEnum();
+		$data['motifs'] = $this->trajetModel->getEnumValues('motifs');
 		$data['item'] = $this->model;
 
 		$missionsPending = $this->model
