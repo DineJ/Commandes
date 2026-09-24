@@ -741,7 +741,7 @@ function validateFormTrajetEdit()
 
 	// Get values
 	let lieu_depart = document.getElementById('id_lieu_depart').value;
-	let old_lieu_depart = document.getElementById('oldid_lieu_depart');
+	let old_lieu_depart = document.getElementById('oldid_lieu_depart').value;
 	row++;
 
 	// Check values
@@ -752,7 +752,7 @@ function validateFormTrajetEdit()
 
 	// Get values
 	let lieu_arrive = document.getElementById('id_lieu_arrive').value;
-	let old_lieu_arrive = document.getElementById('oldid_lieu_arrive');
+	let old_lieu_arrive = document.getElementById('oldid_lieu_arrive').value;
 	row++;
 
 	// Check values

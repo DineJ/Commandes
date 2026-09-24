@@ -44,7 +44,7 @@
 			</option>
 		<?php endforeach; ?>
 	</select>
-
+	<input type="hidden" id="oldmotif" name="oldmotif" value="<?= isset($item) ? $item->motif : '' ?>">
 
 	<!-- Redirection button -->
 	<a href="<?= site_url('Trajet') ?>" class="btn btn-secondary mt-3">Retour</a>
