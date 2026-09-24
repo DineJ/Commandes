@@ -65,7 +65,13 @@ class TrajetController extends Controller
 	public function create()
 	{
 		$data['title'] = "Créer Trajet";
+
+		// Get all locations
 		$data['lieux'] = $this->lieuModel->findAll();
+
+		// Get all available motif values
+		$data['motifs'] = $this->model->getEnumValues('motif');
+
 		return view('Trajet/create', $data);
 	}
 

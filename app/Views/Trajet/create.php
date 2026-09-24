@@ -40,18 +40,16 @@
 	<input type="date" id="date_debut" name="date_debut" min="<?= date('Y-m-d') ?>" value="<?= isset($item) ? date('Y-m-d', strtotime($item->date_debut)) : '' ?>" class="form-control mb-4" required>
 
 
-	<!-- Select value -->
+	<!-- Select a reason -->
 	<label class="fw-bold">Motif</label>
-	<div>
-		<select id="motif" name="motif" class="form-control mb-2" required>
-			<option value="" disabled selected hidden> Choississez une option </option>
-			<option value=maraude>Maraude</option>
-			<option value=livraison>Livraison</option>
-			<option value=repas>Repas</option>
-			<option value=demenagement>Démenagement</option>
-			<option value=personnel>Personnel</option>
-		</select>
-	</div>
+	<select id="motif" name="motif" class="form-control mb-2" required>
+		<option value="" disabled selected hidden> Choississez une option </option>
+		<?php foreach ($motifs as $motif): ?>
+			<option value="<?= esc($motif) ?>">
+				<?= esc(ucfirst($motif)) ?>
+			</option>
+		<?php endforeach; ?>
+	</select>
 
 
 	<!-- Redirection button -->
