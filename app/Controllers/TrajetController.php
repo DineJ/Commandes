@@ -82,80 +82,79 @@ class TrajetController extends Controller
 		// Get all submitted form data
 		$data = $this->request->getPost();
 
-		// Retrieve the departure location ID and all arrival location IDs
+		// Get the departure location ID
 		$idLieuDepart = $data['id_lieu_depart'];
+
+		// Get all arrival location IDs
 		$arrivees = $data['arrivees'];
 
-		// Start a database transaction
-		$this->model->db->transStart();
+		// Build an ordered array containing departure + all arrivals
+		$lieuxIds = array_merge([$idLieuDepart], $arrivees);
 
+		// Retrieve all locations
+		$lieux = $this->lieuModel
+			->whereIn('id', $lieuxIds)
+			->findAll();
 
-		// Get the departure location
-		$lieuDepart = $this->lieuModel->find($idLieuDepart);
+		// Index locations by their ID for easier access
+		$lieuxById = [];
 
-		// Initialize the array containing all location names
-		$nomsLieux = [];
-
-		// Add the departure location name
-		$nomsLieux[] = $lieuDepart->surnom;
-
-		// Add every arrival location name
-		foreach ($arrivees as $idLieuArrive)
+		foreach ($lieux as $lieu)
 		{
-			$lieu = $this->lieuModel->find($idLieuArrive);
-			$nomsLieux[] = $lieu->surnom;
+			$lieuxById[$lieu->id] = $lieu;
 		}
 
-		// Build the itinerary name
+		// Build the itinerary name in the correct order
+		$nomsLieux = [];
+
+		foreach ($lieuxIds as $idLieu)
+		{
+			// Add the location nickname to the itinerary name
+			$nomsLieux[] = $lieuxById[$idLieu]->surnom;
+		}
+
+		// Example: Marseille - Lyon - Paris - Caen
 		$nomItineraire = implode(' - ', $nomsLieux);
 
+		// Start database transaction
+		$this->model->db->transBegin();
 
-		//Create the itinerary
-		$this->itineraireModel->insert(['nom' => $nomItineraire]);
+		// Create the itinerary
+		if (!$this->itineraireModel->insert(['nom' => $nomItineraire]))
+		{
+			$this->model->db->transRollback();
+			return redirect()->back()->withInput()->with('error', 'Erreur lors de la création de l\'itinéraire.');
+		}
 
 		// Get the automatically generated itinerary ID
 		$idItineraire = $this->itineraireModel->getInsertID();
 
-
 		// The first trajet starts from the selected departure location
 		$currentDepart = $idLieuDepart;
 
-		// Start trajet order at 1
-		$ordre = 1;
-
-		foreach ($arrivees as $idLieuArrive)
+		// Create all trajet segments
+		foreach ($arrivees as $index => $idLieuArrive)
 		{
-			// Create a new Trajet entity
-			$trajet = new Trajet();
-
-			// Fill the trajet with its data
-			$trajet->fill([
+			// Fill the trajet data
+			if(!$this->model->insert([
 				'id_itineraire'  => $idItineraire,
-				'ordre'          => $ordre,
+				'ordre'          => $index + 1,
 				'id_lieu_depart' => $currentDepart,
 				'id_lieu_arrive' => $idLieuArrive,
 				'date_debut'     => $data['date_debut'],
 				'motif'          => $data['motif'],
-			]);
+			]))
+			{
+				$this->model->db->transRollback();
+				return redirect()->back()->withInput()->with('error', 'Erreur lors de la création du trajet.');
+			}
 
-			// Insert the trajet into the database
-			$this->model->insert($trajet);
-
-			// The current arrival becomes the next departure
+			// The current arrival becomes the departure of the next trajet
 			$currentDepart = $idLieuArrive;
-
-			// Increment the trajet order
-			$ordre++;
 		}
 
-		// Complete the transaction
-		$this->model->db->transComplete();
-
-		// Check if the transaction failed
-		if ($this->model->db->transStatus() === false)
-		{
-			return redirect()->back()->withInput()->with('error', 'Erreur lors de la création de l\'itinéraire.');
-		}
+		// Commit all database changes
+		$this->model->db->transCommit();
 
 		// Redirect to the trajet list
 		return redirect()->to('/Trajet');
