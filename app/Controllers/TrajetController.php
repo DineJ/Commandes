@@ -181,18 +181,96 @@ class TrajetController extends Controller
 	// UPDATE DATABASE
 	public function update($id)
 	{
+		// Get all submitted form data
 		$data = $this->request->getPost();
+
+		// Get the trajet to update
 		$entity = $this->model->find($id);
+
+		// Save old location IDs before updating
+		$oldLieuDepart = $entity->id_lieu_depart;
+		$oldLieuArrive = $entity->id_lieu_arrive;
+
+		// Keep itinerary information
+		$idItineraire = $entity->id_itineraire;
+		$ordre = $entity->ordre;
+
+		// Update trajet data
 		$entity->fill($data);
 
 		if (!$this->model->save($entity))
 		{
-			return redirect()->back()->with('error', 'Erreur lors de la mise à jour.');
+			return redirect()->back()->withInput()->with('error', 'Erreur lors de la mise à jour.');
+		}
+
+		// Check if departure or arrival location has changed
+		$departChanged = $oldLieuDepart != $entity->id_lieu_depart;
+		$arriveChanged = $oldLieuArrive != $entity->id_lieu_arrive;
+
+		if ($departChanged && $ordre > 1)
+		{
+			// Get the previous trial
+			$previousTrajet = $this->model->where('id_itineraire', $idItineraire)
+										  ->where('ordre', $ordre - 1)
+										  ->first();
+
+			// Update the ending location of the previous trial
+			$previousTrajet->id_lieu_arrive = $entity->id_lieu_depart;
+
+			// Save it into the DB
+			$this->model->save($previousTrajet);
+		}
+
+		if ($arriveChanged)
+		{
+			// Get the next trial (return null if doenst exist)
+			$nextTrajet = $this->model->where('id_itineraire', $idItineraire)
+									  ->where('ordre', $ordre + 1)
+									  ->first();
+
+			if ($nextTrajet)
+			{
+				// Update the starting location of the next trial
+				$nextTrajet->id_lieu_depart = $entity->id_lieu_arrive;
+
+				// Save it into the DB
+				$this->model->save($nextTrajet);
+			}
+		}
+
+		// Rebuild itinerary name only if a location has changed
+		if ($departChanged || $arriveChanged)
+		{
+			// Get every trajet of the itinerary in the correct order
+			$trajets = $this->model->where('id_itineraire', $idItineraire)
+								   ->orderBy('ordre', 'ASC')
+								   ->findAll();
+
+			$nomsLieux = [];
+
+			foreach ($trajets as $index => $trajet)
+			{
+				// Add the departure location only for the first trajet
+				if ($index === 0)
+				{
+					$lieuDepart = $this->lieuModel->find($trajet->id_lieu_depart);
+					$nomsLieux[] = $lieuDepart->surnom;
+				}
+
+				// Add each arrival location
+				$lieuArrive = $this->lieuModel->find($trajet->id_lieu_arrive);
+				$nomsLieux[] = $lieuArrive->surnom;
+			}
+
+			// Build the new itinerary name
+			$nomItineraire = implode(' - ', $nomsLieux);
+
+			// Update itinerary name
+			$this->itineraireModel->update($idItineraire,['nom' => $nomItineraire]);
 		}
 
 		return redirect()->to('/Trajet');
 	}
-
 
 	// DELETE AN ELEMENT
 	public function delete($id)
