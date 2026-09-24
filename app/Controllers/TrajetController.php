@@ -159,7 +159,15 @@ class TrajetController extends Controller
 	// MODIFICATION FORM
 	public function edit($id)
 	{
+		// Get the trajet to edit
 		$data['item'] = $this->model->find($id);
+
+		// Get all locations
+		$data['lieux'] = $this->lieuModel->findAll();
+
+		// Get all available motif values
+		$data['motifs'] = $this->model->getMotifEnum();
+
 		$data['title'] = "Modifier Trajet";
 		return view('Trajet/edit', $data);
 	}

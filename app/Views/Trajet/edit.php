@@ -5,49 +5,46 @@
 
 <form method="post" action="<?= site_url('Trajet/update/'.$item->id) ?>" onsubmit="return validateFormTrajetEdit()">
 
-	<!-- Type number -->
-	<label>id_lieu_depart</label>
-	<input type="number" id="id_lieu_depart" name="id_lieu_depart" value="<?= isset($item) ? $item->id_lieu_depart : '' ?>" class="form-control" required>
+	<!-- Display all locations into a list -->
+	<label for="id_lieu_depart" class="fw-bold">Lieu de départ</label>
+	<select id="id_lieu_depart" name="id_lieu_depart" class="form-control mb-3" required>
+		<?php foreach ($lieux as $lieu): ?>
+			<option value="<?= $lieu->id ?>" <?= (isset($item) && $item->id_lieu_depart == $lieu->id) ? 'selected' : '' ?>>
+				<?= esc($lieu->surnom) ?>
+			</option>
+		<?php endforeach; ?>
+	</select>
 	<input type="hidden" id="oldid_lieu_depart" name="oldid_lieu_depart" value="<?= isset($item) ? $item->id_lieu_depart : '' ?>">
 
-	<!-- Type number -->
-	<label>id_lieu_arrive</label>
-	<input type="number" id="id_lieu_arrive" name="id_lieu_arrive" value="<?= isset($item) ? $item->id_lieu_arrive : '' ?>" class="form-control" required>
+
+	<!-- Display all locations into a list -->
+	<label for="id_lieu_arrive" class="fw-bold">Lieu d'arrivé</label>
+	<select id="id_lieu_arrive" name="id_lieu_arrive" class="form-control mb-3" required>
+		<?php foreach ($lieux as $lieu): ?>
+			<option value="<?= $lieu->id ?>" <?= (isset($item) && $item->id_lieu_arrive == $lieu->id) ? 'selected' : '' ?>>
+				<?= esc($lieu->surnom) ?>
+			</option>
+		<?php endforeach; ?>
+	</select>
 	<input type="hidden" id="oldid_lieu_arrive" name="oldid_lieu_arrive" value="<?= isset($item) ? $item->id_lieu_arrive : '' ?>">
 
-	<!-- Type date_debut -->
-	<label>date_debut</label>
-	<input type="text" onchange="setUpper(document.getElementById('date_debut'));" id="date_debut" name="date_debut" value="<?= isset($item) ? $item->date_debut : '' ?>" class="form-control" required>
-	<input type="hidden" id="olddate_debut" name="olddate_debut" value="<?= isset($item) ? $item->date_debut : '' ?>">
 
-	<!-- Type date_arrivee -->
-	<label>date_arrivee</label>
-	<input type="text" onchange="setUpper(document.getElementById('date_arrivee'));" id="date_arrivee" name="date_arrivee" value="<?= isset($item) ? $item->date_arrivee : '' ?>" class="form-control" required>
-	<input type="hidden" id="olddate_arrivee" name="olddate_arrivee" value="<?= isset($item) ? $item->date_arrivee : '' ?>">
+	<!-- Select a date -->
+	<label class="fw-bold">Date début</label>
+	<input type="date" id="date_debut" name="date_debut" value="<?= isset($item) ? esc(date('Y-m-d', strtotime($item->date_debut))) : '' ?>" class="form-control mb-3" required>
+	<input type="hidden" id="olddate_debut" name="olddate_debut" value="<?= isset($item) ? esc(date('Y-m-d', strtotime($item->date_debut))) : '' ?>">
 
-	<!-- Select value -->
-	<label>motif</label>
-	<div>
-		<select id="motif" name="motif" class="form-control" required>
-			<option value="" disabled selected hidden> Choississez une option </option>
-			<option value=B>B</option>
-			<option value=BE>BE</option>
-			<option value=C>C</option>
-			<option value=C1>C1</option>
-			<option value=C1E>C1E</option>
-		</select>
-	</div>
-	<input type="hidden" id="oldmotif" name="oldmotif" value="<?= isset($item) ? $item->motif : '' ?>">
 
-	<!-- Type number -->
-	<label>km_depart</label>
-	<input type="number" id="km_depart" name="km_depart" value="<?= isset($item) ? $item->km_depart : '' ?>" class="form-control" required>
-	<input type="hidden" id="oldkm_depart" name="oldkm_depart" value="<?= isset($item) ? $item->km_depart : '' ?>">
+	<!-- Select a reason -->
+	 <label class="fw-bold">Motif</label>
+	<select id="motif" name="motif" class="form-control mb-2" required>
+		<?php foreach ($motifs as $motif): ?>
+			<option value="<?= esc($motif) ?>" <?= $item->motif === $motif ? 'selected' : '' ?>>
+				<?= esc(ucfirst($motif)) ?>
+			</option>
+		<?php endforeach; ?>
+	</select>
 
-	<!-- Type number -->
-	<label>km_arrive</label>
-	<input type="number" id="km_arrive" name="km_arrive" value="<?= isset($item) ? $item->km_arrive : '' ?>" class="form-control" required>
-	<input type="hidden" id="oldkm_arrive" name="oldkm_arrive" value="<?= isset($item) ? $item->km_arrive : '' ?>">
 
 	<!-- Redirection button -->
 	<a href="<?= site_url('Trajet') ?>" class="btn btn-secondary mt-3">Retour</a>
