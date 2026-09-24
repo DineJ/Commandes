@@ -57,6 +57,9 @@ class TrajetController extends Controller
 	public function show($id)
 	{
 		$data['item'] = $this->model->find($id);
+		$data['lieu_depart'] = $this->lieuModel->find($data['item']->id_lieu_depart);
+		$data['lieu_arrive'] = $this->lieuModel->find($data['item']->id_lieu_arrive);
+
 		return view('Trajet/show', $data);
 	}
 

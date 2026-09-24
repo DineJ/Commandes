@@ -4,51 +4,34 @@
 <div class="container mt-5">
 <h2>Détails de Trajet</h2>
 
-<div class="table-responsive">
+<div class="table-responsive fw-bold">
 	<table class="table table-striped table-bordered mt-3">
 		<tbody>
 
-			<!-- Display id_lieu_depart -->
+			<!-- Display starting location -->
 			<tr>
-				<td class="td-hidden">id_lieu_depart</td>
-				<td data-label="id_lieu_depart"><?= $item->id_lieu_depart ?></td>
+				<td class="td-hidden">Lieu départ</td>
+				<td data-label="Lieu départ"><?= $lieu_depart->surnom ?></td>
 			</tr>
 
-			<!-- Display id_lieu_arrive -->
+			<!-- Display ending location -->
 			<tr>
-				<td class="td-hidden">id_lieu_arrive</td>
-				<td data-label="id_lieu_arrive"><?= $item->id_lieu_arrive ?></td>
+				<td class="td-hidden">Lieu arrivé</td>
+				<td data-label="Lieu arrivé"><?= $lieu_arrive->surnom ?></td>
 			</tr>
 
-			<!-- Display date_debut -->
+			<!-- Display the date of the trial -->
 			<tr>
-				<td class="td-hidden">date_debut</td>
-				<td data-label="date_debut"><?= $item->date_debut ?></td>
+				<td class="td-hidden">Date début</td>
+				<td data-label="Date début"><?= esc(date('d/m/Y', strtotime($item->date_debut))) ?></td>
 			</tr>
 
-			<!-- Display date_arrivee -->
+			<!-- Display reason of the trial -->
 			<tr>
-				<td class="td-hidden">date_arrivee</td>
-				<td data-label="date_arrivee"><?= $item->date_arrivee ?></td>
+				<td class="td-hidden">Motif</td>
+				<td data-label="Motif"><?= ucfirst($item->motif) ?></td>
 			</tr>
 
-			<!-- Display motif -->
-			<tr>
-				<td class="td-hidden">motif</td>
-				<td data-label="motif"><?= $item->motif ?></td>
-			</tr>
-
-			<!-- Display km_depart -->
-			<tr>
-				<td class="td-hidden">km_depart</td>
-				<td data-label="km_depart"><?= $item->km_depart ?></td>
-			</tr>
-
-			<!-- Display km_arrive -->
-			<tr>
-				<td class="td-hidden">km_arrive</td>
-				<td data-label="km_arrive"><?= $item->km_arrive ?></td>
-			</tr>
 		</tbody>
 	</table>
 </div>
@@ -56,16 +39,12 @@
 
 <div>
 	<form method="post" action="<?= site_url('Trajet/update/'.$item->id) ?>">
+		<!-- Redirection button -->
+		<a href="<?= site_url('Trajet') ?>" class="btn btn-secondary">Retour</a>
 
 		<!-- Redirection button to edit user form -->
 		<a href="<?= site_url('Trajet/edit/'.$item->id) ?>" class="btn btn-warning">Modifier</a>
-
-		<!-- Disabled account button -->
-		
 	</form>
 </div>
-</br>
 
-<!-- Redirection button -->
-<a href="<?= site_url('Trajet') ?>" class="btn btn-secondary">Retour</a>
 <?= $this->endSection() ?>
