@@ -36,7 +36,7 @@
 
 
 	<!-- Select a reason -->
-	 <label class="fw-bold">Motif</label>
+	<label class="fw-bold">Motif</label>
 	<select id="motif" name="motif" class="form-control mb-2" required>
 		<?php foreach ($motifs as $motif): ?>
 			<option value="<?= esc($motif) ?>" <?= $item->motif === $motif ? 'selected' : '' ?>>
