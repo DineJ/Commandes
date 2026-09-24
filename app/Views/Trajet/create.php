@@ -24,8 +24,8 @@
 
 			<!-- Display all locations into a list -->
 			<label for="id_lieu_arrive" class="fw-bold trajet-title">Lieu d'arrivé 1</label>
-			<select id="id_lieu_arrive" name="arrivees[0]" onchange="disabledDefault('id_lieu_depart')" class="form-control" required>
-				<option value="">    Choisir un lieu d'arrivé    </option>
+			<select id="id_lieu_arrive" name="arrivees[0]" class="form-control" required>
+				<option value="" disabled selected hidden>    Choisir un lieu d'arrivé    </option>
 				<?php foreach ($lieux as $lieu): ?>
 					<option value="<?= $lieu->id ?>">
 						<?= esc($lieu->surnom) ?>
