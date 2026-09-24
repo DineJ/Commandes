@@ -37,7 +37,7 @@
 
 	<!-- Select a date -->
 	<label class="fw-bold">Date début</label>
-	<input type="date" onchange="setUpper(document.getElementById('date_debut'));" id="date_debut" name="date_debut" min="<?= date('Y-m-d') ?>" value="<?= isset($item) ? date('Y-m-d', strtotime($item->date_debut)) : '' ?>" class="form-control mb-4" required>
+	<input type="date" id="date_debut" name="date_debut" min="<?= date('Y-m-d') ?>" value="<?= isset($item) ? date('Y-m-d', strtotime($item->date_debut)) : '' ?>" class="form-control mb-4" required>
 
 
 	<!-- Select value -->
@@ -60,6 +60,5 @@
 </form>
 
 <script src="<?= base_url('js/main.js') ?>"></script>
-<script src="<?= base_url('js/trajetForm.js') ?>"></script>
 
 <?= $this->endSection() ?>
