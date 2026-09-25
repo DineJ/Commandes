@@ -78,7 +78,7 @@ function entityColumns($entities, $entity_name, $columns_entity, $message, $rese
 					$id = $v;
 				endif;
 				if (in_array($c, $columns_entity)):
-					$html .='<td data-label="'.$c.'">'.esc($v).'</td>';
+					$html .='<td data-label="'.$c.'">'.esc(ucfirst($v)).'</td>';
 				endif;
 			endforeach;
 
