@@ -35,12 +35,14 @@ $name = session()->get('user')['name'] ?? null;
 						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
 							<li><a class="dropdown-item" href="/Admin">Home</a></li>
 							<li><a class="dropdown-item" href="/Ip">IP</a></li>
+							<li><hr class="dropdown-divider"></li>
 							<li><a class="dropdown-item" href="/Assurance">Assurance</a></li>
 							<li><a class="dropdown-item" href="/Incident">Incident</a></li>
 							<li><a class="dropdown-item" href="/Infraction">Infraction</a></li>
-							<li><a class="dropdown-item" href="/Mission">Mission</a></li>
 							<li><a class="dropdown-item" href="/Lieu">Lieu</a></li>
+							<li><a class="dropdown-item" href="/Mission">Mission</a></li>
 							<li><a class="dropdown-item" href="/Suivi">Suivi</a></li>
+							<li><a class="dropdown-item" href="/Trajet">Trajet</a></li>
 							<li><a class="dropdown-item" href="/Type_incident">Type incident</a></li>
 							<li><a class="dropdown-item" href="/User">Utilisateur</a></li>
 							<li><a class="dropdown-item" href="/Vehicule">Véhicule</a></li>

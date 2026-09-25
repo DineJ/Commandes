@@ -5,55 +5,59 @@
 
 <form method="post" action="<?= site_url('Trajet/store/') ?>">
 
-	<!-- Type number -->
-	<label>id_lieu_depart</label>
-	<input type="number" id="id_lieu_depart" name="id_lieu_depart" value="<?= isset($item) ? $item->id_lieu_depart : '' ?>" class="form-control" required>
+	<button type="button" id="add-trajet" class="btn btn-success mt-3 mb-4">Ajouter un trajet</button>
+	<br>
 
-	<!-- Type number -->
-	<label>id_lieu_arrive</label>
-	<input type="number" id="id_lieu_arrive" name="id_lieu_arrive" value="<?= isset($item) ? $item->id_lieu_arrive : '' ?>" class="form-control" required>
+	<!-- Display all locations into a list -->
+	<label for="id_lieu_depart" class="fw-bold">Lieu de départ</label>
+	<select id="id_lieu_depart" name="id_lieu_depart" onchange="disabledDefault('id_lieu_depart')" class="form-control mb-3" required>
+		<option value="">    Choisir un lieu de départ    </option>
+		<?php foreach ($lieux as $lieu): ?>
+			<option value="<?= $lieu->id ?>">
+				<?= esc($lieu->surnom) ?>
+			</option>
+		<?php endforeach; ?>
+	</select>
 
-	<!-- Type date_debut -->
-	<label>date_debut</label>
-	<input type="text" onchange="setUpper(document.getElementById('date_debut'));" id="date_debut" name="date_debut" value="<?= isset($item) ? $item->date_debut : '' ?>" class="form-control" required>
+	<div id="trajets-container">
+		<div class="trajet-row mb-4">
 
-	<!-- Type date_arrivee -->
-	<label>date_arrivee</label>
-	<input type="text" onchange="setUpper(document.getElementById('date_arrivee'));" id="date_arrivee" name="date_arrivee" value="<?= isset($item) ? $item->date_arrivee : '' ?>" class="form-control" required>
-
-	<!-- Select value -->
-	<label>motif</label>
-	<div>
-		<select id="motif" name="motif" class="form-control" required>
-			<option value="" disabled selected hidden> Choississez une option </option>
-			<option value=B>B</option>
-			<option value=BE>BE</option>
-			<option value=C>C</option>
-			<option value=C1>C1</option>
-			<option value=C1E>C1E</option>
-		</select>
+			<!-- Display all locations into a list -->
+			<label for="id_lieu_arrive" class="fw-bold trajet-title">Lieu d'arrivé 1</label>
+			<select id="id_lieu_arrive" name="arrivees[0]" class="form-control" required>
+				<option value="" disabled selected hidden>    Choisir un lieu d'arrivé    </option>
+				<?php foreach ($lieux as $lieu): ?>
+					<option value="<?= $lieu->id ?>">
+						<?= esc($lieu->surnom) ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+		</div>
 	</div>
 
-	<!-- Type number -->
-	<label>km_depart</label>
-	<input type="number" id="km_depart" name="km_depart" value="<?= isset($item) ? $item->km_depart : '' ?>" class="form-control" required>
+	<!-- Select a date -->
+	<label class="fw-bold">Date début</label>
+	<input type="date" id="date_debut" name="date_debut" min="<?= date('Y-m-d') ?>" value="<?= isset($item) ? date('Y-m-d', strtotime($item->date_debut)) : '' ?>" class="form-control mb-4" required>
 
-	<!-- Type number -->
-	<label>km_arrive</label>
-	<input type="number" id="km_arrive" name="km_arrive" value="<?= isset($item) ? $item->km_arrive : '' ?>" class="form-control" required>
+
+	<!-- Select a reason -->
+	<label class="fw-bold">Motif</label>
+	<select id="motif" name="motif" class="form-control mb-2" required>
+		<option value="" disabled selected hidden> Choississez une option </option>
+		<?php foreach ($motifs as $motif): ?>
+			<option value="<?= esc($motif) ?>">
+				<?= esc(ucfirst($motif)) ?>
+			</option>
+		<?php endforeach; ?>
+	</select>
+
 
 	<!-- Redirection button -->
 	<a href="<?= site_url('Trajet') ?>" class="btn btn-secondary mt-3">Retour</a>
 	<button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
 </form>
 
-
-<script>
-	// Caps text
-	function setUpper(element)
-	{
-		element.value=element.value.toUpperCase();
-	}
-</script>
+<script src="<?= base_url('js/main.js') ?>"></script>
+<script src="<?= base_url('js/trajetForm.js') ?>"></script>
 
 <?= $this->endSection() ?>

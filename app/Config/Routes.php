@@ -3,45 +3,60 @@
 use CodeIgniter\Router\RouteCollection;
 // Auto-generated routes
 
+// Routes for Itineraire
+$routes->get('Itineraire', 'ItineraireController::index');
+$routes->get('Itineraire/show/(:num)', 'ItineraireController::show/$1');
+$routes->get('Itineraire/create', 'ItineraireController::create');
+$routes->post('Itineraire/store', 'ItineraireController::store');
+$routes->get('Itineraire/edit/(:num)', 'ItineraireController::edit/$1');
+$routes->post('Itineraire/update/(:num)', 'ItineraireController::update/$1');
+$routes->get('Itineraire/delete/(:num)', 'ItineraireController::delete/$1');
+
+
 $routes->group('', ['filter' => 'Redirection:admin'], function($routes)
 {
 
+	// Routes for Trajet
+	$routes->get('Trajet', 'TrajetController::index'); // Route that leads to the display of all data
+	$routes->get('Trajet/show/(:num)', 'TrajetController::show/$1'); // Route that leads to the display of one specific data
+	$routes->get('Trajet/create', 'TrajetController::create'); // Route that leads to the display of creating a specific data
+	$routes->post('Trajet/store', 'TrajetController::store'); // Route that leads to the insert fuction of the DB
+	$routes->get('Trajet/edit/(:num)', 'TrajetController::edit/$1'); // Route that leads to the display of editing a specific data
+	$routes->post('Trajet/update/(:num)', 'TrajetController::update/$1'); // Route that leads to the update fuction of the DB
+
+
 	// Routes for Infraction
-	$routes->get('Infraction', 'InfractionController::index');
-	$routes->get('Infraction/show/(:num)', 'InfractionController::show/$1');
-	$routes->match(['post', 'get'], 'Infraction/create', 'InfractionController::create');
-	$routes->post('Infraction/store', 'InfractionController::store');
-	$routes->get('Infraction/edit/(:num)', 'InfractionController::edit/$1');
-	$routes->post('Infraction/update/(:num)', 'InfractionController::update/$1');
-	$routes->get('Infraction/delete/(:num)', 'InfractionController::delete/$1');
+	$routes->get('Infraction', 'InfractionController::index'); // Route that leads to the display of all data
+	$routes->get('Infraction/show/(:num)', 'InfractionController::show/$1'); // Route that leads to the display of one specific data
+	$routes->match(['post', 'get'], 'Infraction/create', 'InfractionController::create'); // Route that leads to the display of creating a specific data
+	$routes->post('Infraction/store', 'InfractionController::store'); // Route that leads to the insert fuction of the DB
+	$routes->get('Infraction/edit/(:num)', 'InfractionController::edit/$1'); // Route that leads to the display of editing a specific data
+	$routes->post('Infraction/update/(:num)', 'InfractionController::update/$1'); // Route that leads to the update fuction of the DB
 
 
 	// Routes for Lieu
-	$routes->get('Lieu', 'LieuController::index');
-	$routes->get('Lieu/show/(:num)', 'LieuController::show/$1');
-	$routes->get('Lieu/create', 'LieuController::create');
-	$routes->post('Lieu/store', 'LieuController::store');
-	$routes->get('Lieu/edit/(:num)', 'LieuController::edit/$1');
-	$routes->post('Lieu/update/(:num)', 'LieuController::update/$1');
-	$routes->get('Lieu/delete/(:num)', 'LieuController::delete/$1');
+	$routes->get('Lieu', 'LieuController::index'); // Route that leads to the display of all data
+	$routes->get('Lieu/show/(:num)', 'LieuController::show/$1'); // Route that leads to the display of one specific data
+	$routes->get('Lieu/create', 'LieuController::create'); // Route that leads to the display of creating a specific data
+	$routes->post('Lieu/store', 'LieuController::store'); // Route that leads to the insert fuction of the DB
+	$routes->get('Lieu/edit/(:num)', 'LieuController::edit/$1'); // Route that leads to the display of editing a specific data
+	$routes->post('Lieu/update/(:num)', 'LieuController::update/$1'); // Route that leads to the update fuction of the DB
 
 
 	// Routes for Mission
+	$routes->get('Mission', 'MissionController::index'); // Route that leads to the display of all data
+	$routes->get('Mission/show/(:num)/(:num)', 'MissionController::show/$1/$2'); // Route that leads to the display of one specific data
+	$routes->get('Mission/edit/(:num)/(:num)', 'MissionController::edit/$1/$2'); // Route that leads to the display of editing a specific data
+	$routes->post('Mission/update/(:num)/(:num)', 'MissionController::update/$1/$2'); // Route that leads to the update fuction of the DB
 
-	$routes->get('Mission', 'MissionController::index');
-	$routes->get('Mission/show/(:num)', 'MissionController::show/$1');
-	$routes->get('Mission/edit/(:num)', 'MissionController::edit/$1');
-	$routes->post('Mission/update/(:num)', 'MissionController::update/$1');
-	$routes->get('Mission/delete/(:num)', 'MissionController::delete/$1');
 
 	// Routes for Assurance
-	$routes->get('Assurance', 'AssuranceController::index');
-	$routes->get('Assurance/show/(:num)', 'AssuranceController::show/$1');
-	$routes->match(['post', 'get'],'Assurance/create', 'AssuranceController::create');
-	$routes->post('Assurance/store', 'AssuranceController::store');
-	$routes->get('Assurance/edit/(:num)', 'AssuranceController::edit/$1');
-	$routes->post('Assurance/update/(:num)', 'AssuranceController::update/$1');
-	$routes->get('Assurance/delete/(:num)', 'AssuranceController::delete/$1');
+	$routes->get('Assurance', 'AssuranceController::index'); // Route that leads to the display of all data
+	$routes->get('Assurance/show/(:num)', 'AssuranceController::show/$1'); // Route that leads to the display of one specific data
+	$routes->match(['post', 'get'],'Assurance/create', 'AssuranceController::create'); // Route that leads to the display of creating a specific data
+	$routes->post('Assurance/store', 'AssuranceController::store'); // Route that leads to the insert fuction of the DB
+	$routes->get('Assurance/edit/(:num)', 'AssuranceController::edit/$1'); // Route that leads to the display of editing a specific data
+	$routes->post('Assurance/update/(:num)', 'AssuranceController::update/$1'); // Route that leads to the update fuction of the DB
 
 
 	// Routes for Suivi
@@ -52,7 +67,6 @@ $routes->group('', ['filter' => 'Redirection:admin'], function($routes)
 	$routes->get('Suivi/edit/(:num)', 'SuiviController::edit/$1'); // Route that leads to the display of editing a specific data
 	$routes->post('Suivi/update/(:num)', 'SuiviController::update/$1'); // Route that leads to the update fuction of the DB
 	$routes->get('Suivi/pdf/(:num)', 'SuiviController::pdf/$1'); // Route that display the PDF
-	$routes->get('Suivi/delete/(:num)', 'SuiviController::delete/$1'); // Not used
 
 
 	// Routes for Ip
@@ -67,7 +81,6 @@ $routes->group('', ['filter' => 'Redirection:admin'], function($routes)
 	$routes->post('Type_incident/store', 'Type_incidentController::store'); // Route that leads to the insert fuction of the DB
 	$routes->get('Type_incident/edit/(:num)', 'Type_incidentController::edit/$1'); // Route that leads to the display of editing a specific data
 	$routes->post('Type_incident/update/(:num)', 'Type_incidentController::update/$1'); // Route that leads to the update fuction of the DB
-	$routes->get('Type_incident/delete/(:num)', 'Type_incidentController::delete/$1');
 
 
 	// Routes for Vehicule
@@ -77,7 +90,6 @@ $routes->group('', ['filter' => 'Redirection:admin'], function($routes)
 	$routes->post('Vehicule/store', 'VehiculeController::store'); // Route that leads to the insert fuction of the DB
 	$routes->get('Vehicule/edit/(:num)', 'VehiculeController::edit/$1'); // Route that leads to the display of editing a specific data
 	$routes->post('Vehicule/update/(:num)', 'VehiculeController::update/$1'); // Route that leads to the update fuction of the DB
-	$routes->get('Vehicule/delete/(:num)', 'VehiculeController::delete/$1'); // Not used
 
 
 	// Routes for Incident
@@ -87,7 +99,6 @@ $routes->group('', ['filter' => 'Redirection:admin'], function($routes)
 	$routes->post('Incident/store', 'IncidentController::store'); // Route that leads to the insert fuction of the DB
 	$routes->get('Incident/edit/(:num)', 'IncidentController::edit/$1'); // Route that leads to the display of editing a specific data
 	$routes->post('Incident/update/(:num)', 'IncidentController::update/$1'); // Route that leads to the update fuction of the DB
-	$routes->get('Incident/delete/(:num)', 'IncidentController::delete/$1'); // Not used
 
 
 	// Routes for Permis
@@ -95,7 +106,6 @@ $routes->group('', ['filter' => 'Redirection:admin'], function($routes)
 	$routes->post('Permis/store/', 'PermisController::store'); // Route that leads to the insert fuction of the DB
 	$routes->get('Permis/edit/(:segment)', 'PermisController::edit/$1'); // Route that leads to the display of editing a specific data
 	$routes->post('Permis/update/(:segment)', 'PermisController::update/$1'); // Route that leads to the update fuction of the DB
-	$routes->get('Permis/delete/(:num)', 'PermisController::delete/$1'); // Not used
 
 
 	// Routes for User
@@ -105,7 +115,7 @@ $routes->group('', ['filter' => 'Redirection:admin'], function($routes)
 	$routes->post('User/store', 'UserController::store'); // Route that leads to the insert fuction of the DB
 	$routes->get('User/edit/(:num)', 'UserController::edit/$1'); // Route that leads to the display of editing a specific data
 	$routes->post('User/update/(:num)', 'UserController::update/$1'); // Route that leads to the update fuction of the DB
-	$routes->get('User/delete/(:num)', 'UserController::delete/$1'); // Not used
+
 
 	// Routes for Admin
 	$routes->get('Admin', 'AdminController::administrator'); // Route that leads to admin view

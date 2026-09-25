@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mariadb-commandes
--- Généré le : mar. 15 sep. 2026 à 09:05
+-- Généré le : mer. 23 sep. 2026 à 16:45
 -- Version du serveur : 11.3.2-MariaDB-1:11.3.2+maria~ubu2204
--- Version de PHP : 8.3.30
+-- Version de PHP : 8.3.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -38,8 +38,7 @@ CREATE TABLE `assurance` (
 --
 
 INSERT INTO `assurance` (`id`, `date_contrat`, `nom_assurance`) VALUES
-(1, '2025-03-01', 'AXA'),
-(2, '2025-02-15', 'EDF');
+(1, '2025-03-01', 'AXA');
 
 --
 -- Déclencheurs `assurance`
@@ -70,8 +69,7 @@ CREATE TABLE `assurance_vehicule` (
 --
 
 INSERT INTO `assurance_vehicule` (`id_assurance`, `id_vehicule`) VALUES
-(1, 1),
-(2, 2);
+(1, 1);
 
 -- --------------------------------------------------------
 
@@ -145,7 +143,20 @@ CREATE TABLE `historique` (
 INSERT INTO `historique` (`id_user`, `id_ip`, `date_dbt`, `date_fin`) VALUES
 (2, 6, '2026-09-14 09:08:56', '2026-09-14 09:08:56'),
 (2, 6, '2026-09-14 09:18:45', '2026-09-14 09:18:58'),
-(2, 6, '2026-09-14 09:27:03', '2026-09-14 09:27:03');
+(2, 6, '2026-09-14 09:27:03', '2026-09-14 09:27:03'),
+(2, 6, '2026-09-15 15:35:05', '2026-09-15 15:35:20'),
+(2, 6, '2026-09-16 09:27:46', '2026-09-16 09:27:46'),
+(2, 6, '2026-09-16 15:08:44', '2026-09-16 15:11:17'),
+(2, 6, '2026-09-16 17:46:15', '2026-09-16 17:46:46'),
+(2, 6, '2026-09-17 09:54:37', '2026-09-17 10:56:07'),
+(2, 6, '2026-09-17 10:56:26', '2026-09-17 10:56:26'),
+(2, 6, '2026-09-17 11:24:45', '2026-09-17 09:56:04'),
+(2, 6, '2026-09-18 10:52:35', '2026-09-18 10:59:46'),
+(2, 6, '2026-09-22 10:34:48', '2026-09-22 13:54:12'),
+(2, 6, '2026-09-22 13:55:44', '2026-09-22 18:17:18'),
+(2, 6, '2026-09-22 18:17:22', '2026-09-22 18:17:22'),
+(2, 6, '2026-09-23 10:08:55', '2026-09-23 10:09:32'),
+(2, 6, '2026-09-23 13:43:10', '2026-09-23 14:10:37');
 
 -- --------------------------------------------------------
 
@@ -173,6 +184,17 @@ CREATE TABLE `incident` (
   `date_incident` date NOT NULL,
   `explication_incident` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `incident`
+--
+
+INSERT INTO `incident` (`id`, `id_vehicule`, `id_user`, `id_type_incident`, `date_incident`, `explication_incident`) VALUES
+(1, 2, 2, 3, '2026-09-22', 'FUITE DE FOU'),
+(2, 2, 2, 2, '2026-09-22', 'DD'),
+(3, 1, 2, 4, '2026-09-22', 'BC'),
+(4, 2, 2, 2, '2026-09-22', 'PANNE'),
+(5, 2, 2, 1, '2026-09-22', 'Entretien de routine');
 
 --
 -- Déclencheurs `incident`
@@ -209,6 +231,13 @@ CREATE TABLE `infraction` (
   `prix` smallint(5) UNSIGNED NOT NULL,
   `stationnement` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `infraction`
+--
+
+INSERT INTO `infraction` (`id`, `id_mission`, `date_infraction`, `commentaire`, `points`, `prix`, `stationnement`) VALUES
+(1, 1, '2026-09-21', 'PAS DINFRACTION', 4, 135, 1);
 
 --
 -- Déclencheurs `infraction`
@@ -248,6 +277,31 @@ CREATE TABLE `Ip` (
 
 INSERT INTO `Ip` (`id`, `adresse_ip`, `nb_echec`) VALUES
 (6, '172.28.0.1', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `itineraire`
+--
+
+CREATE TABLE `itineraire` (
+  `id` int(11) NOT NULL,
+  `nom` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `itineraire`
+--
+
+INSERT INTO `itineraire` (`id`, `nom`) VALUES
+(1, 'trajet 1'),
+(2, 'trajet 2'),
+(3, 'trajet 3'),
+(4, 'Lyon - Toulouse'),
+(5, 'Paris - Lyon'),
+(6, 'Paris - Lyon'),
+(7, 'Nice - Toulouse - Paris - Toulouse - Marseille'),
+(8, 'Marseille - Lyon - Lyon - Nice');
 
 -- --------------------------------------------------------
 
@@ -313,40 +367,15 @@ CREATE TABLE `mission` (
   `id` int(11) NOT NULL,
   `id_vehicule` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
-  `id_trajet` int(11) NOT NULL
+  `id_itineraire` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déclencheurs `mission`
+-- Déchargement des données de la table `mission`
 --
-DELIMITER $$
-CREATE TRIGGER `trg_mission_dates_bi` BEFORE INSERT ON `mission` FOR EACH ROW BEGIN
-  IF NEW.date_arrivee < NEW.date_depart THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date d arrivée est antérieur à celle de départ. Veuillez resaisir votre date.";
-  END IF;
-  IF NEW.date_depart > CURRENT_DATE() THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ="La date de départ est ultérieur à aujourd hui. Veuillez resaisir votre date.";
-  END IF;
-  IF NEW.km_arrive < NEW.km_depart THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Le kilométrage d arrivé est plus petit que celui de départ. Veuillez resaisir votre nombre.";
-  END IF;
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `trg_mission_dates_bu` BEFORE UPDATE ON `mission` FOR EACH ROW BEGIN
-  IF NEW.date_arrivee < NEW.date_depart THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "La date d arrivée est antérieur à celle de départ. Veuillez resaisir votre date.";
-  END IF;
-  IF NEW.date_depart > CURRENT_DATE() THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ="La date de départ est ultérieur à aujourd hui. Veuillez resaisir votre date.";
-  END IF;
-  IF NEW.km_arrive < NEW.km_depart THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Le kilométrage d arrivé est plus petit que celui de départ. Veuillez resaisir votre nombre.";
-  END IF;
-END
-$$
-DELIMITER ;
+
+INSERT INTO `mission` (`id`, `id_vehicule`, `id_user`, `id_itineraire`) VALUES
+(1, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -409,6 +438,13 @@ CREATE TABLE `suivi` (
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Déchargement des données de la table `suivi`
+--
+
+INSERT INTO `suivi` (`id`, `id_incident`, `date_intervention`, `description`) VALUES
+(1, 5, '2026-09-22', '{\"État pneux avants\":{\"etat\":\"Usés\",\"images\":[\"oeil.png\",\"pneu_use.png\"]},\"État pneux arrières\":{\"etat\":\"Usés\",\"images\":[\"oeil.png\",\"pneu_use.png\"]},\"Pression pneux avants\":{\"etat\":\"Gonflés\",\"images\":[\"oeil.png\",\"pneu_pression.png\"]},\"Pression pneux arrières\":{\"etat\":\"Dégonflés\",\"images\":[\"oeil.png\",\"pneu_pression.png\"]},\"Huile moteur\":{\"etat\":\"À remplir\",\"images\":[\"oeil.png\",\"jauge.png\"]},\"Liquide refroidissement\":{\"etat\":\"À remplir\",\"images\":[\"oeil.png\",\"jauge.png\"]},\"Liquide de frein\":{\"etat\":\"À remplir\",\"images\":[\"oeil.png\",\"jauge.png\"]},\"Liquide lave-glace\":{\"etat\":\"À remplir\",\"images\":[\"oeil.png\",\"jauge.png\"]},\"Warning\":{\"etat\":\"Éteints\",\"images\":[\"clignotants.gif\"]},\"Plaque immatriculation avant\":{\"etat\":\"Éteints\",\"images\":[\"plaques.gif\"]},\"Plaque immatricualtion arrière\":{\"etat\":\"Allumés\",\"images\":[\"plaques.gif\"]},\"Feux de stop\":{\"etat\":\"Éteints\",\"images\":[\"feux_stop_recul.png\"]},\"Feux de recul\":{\"etat\":\"Allumés\",\"images\":[\"feux_stop_recul.png\"]},\"Feux de route\":{\"etat\":\"Éteints\",\"images\":[\"feux_croisement_route.png\"]},\"Feux de croisement\":{\"etat\":\"Éteints\",\"images\":[\"feux_croisement_route.png\"]}}');
+
 -- --------------------------------------------------------
 
 --
@@ -417,14 +453,31 @@ CREATE TABLE `suivi` (
 
 CREATE TABLE `trajet` (
   `id` int(11) NOT NULL,
+  `id_itineraire` int(11) NOT NULL,
   `id_lieu_depart` int(11) NOT NULL,
   `id_lieu_arrive` int(11) NOT NULL,
+  `ordre` tinyint(4) NOT NULL,
   `date_debut` timestamp NOT NULL,
   `date_arrivee` timestamp NOT NULL,
-  `motif` enum('maraude','livraison','repas','demenagement','personnel') DEFAULT 'livraison',
+  `motif` enum('maraude','livraison','repas','demenagement','personnel') NOT NULL DEFAULT 'livraison',
   `km_depart` int(11) NOT NULL,
   `km_arrive` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `trajet`
+--
+
+INSERT INTO `trajet` (`id`, `id_itineraire`, `id_lieu_depart`, `id_lieu_arrive`, `ordre`, `date_debut`, `date_arrivee`, `motif`, `km_depart`, `km_arrive`) VALUES
+(1, 1, 2, 5, 1, '2026-06-14 09:08:56', '2026-07-10 09:55:18', 'livraison', 250, 251),
+(8, 6, 1, 2, 1, '2026-09-23 00:00:00', '0000-00-00 00:00:00', 'repas', 0, 0),
+(9, 7, 5, 4, 1, '2026-10-11 00:00:00', '0000-00-00 00:00:00', 'personnel', 0, 0),
+(10, 7, 4, 1, 2, '2026-10-11 00:00:00', '0000-00-00 00:00:00', 'personnel', 0, 0),
+(11, 7, 1, 4, 3, '2026-10-11 00:00:00', '0000-00-00 00:00:00', 'personnel', 0, 0),
+(12, 7, 4, 3, 4, '2026-10-11 00:00:00', '0000-00-00 00:00:00', 'personnel', 0, 0),
+(13, 8, 3, 2, 1, '2026-10-01 00:00:00', '0000-00-00 00:00:00', 'repas', 0, 0),
+(14, 8, 2, 2, 2, '2026-10-01 00:00:00', '0000-00-00 00:00:00', 'repas', 0, 0),
+(15, 8, 2, 5, 3, '2026-10-01 00:00:00', '0000-00-00 00:00:00', 'repas', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -471,7 +524,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `nom`, `prenom`, `admin`, `telephone`, `mail`, `actif`, `clef_connexion`) VALUES
-(1, 'TOTO', 'TATA', 0, '0123456789', 'toto@gmail.com', 1, 'b188f429056f143854354596583bef63caaa3b18d697f7d4a12b28df6ac44d11'),
+(1, 'TOTO', 'TATA', 1, '0123456789', 'toto@gmail.com', 1, 'b188f429056f143854354596583bef63caaa3b18d697f7d4a12b28df6ac44d11'),
 (2, 'TITI', 'TUTU', 1, '9876543210', 'titi@gmail.com', 1, 'f5930a61102629c152e9d741fae0105207d834ed2bb09a2d5b5ea127cf6ccb6a');
 
 -- --------------------------------------------------------
@@ -604,6 +657,12 @@ ALTER TABLE `Ip`
   ADD UNIQUE KEY `adresse_ip` (`adresse_ip`);
 
 --
+-- Index pour la table `itineraire`
+--
+ALTER TABLE `itineraire`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Index pour la table `lieu`
 --
 ALTER TABLE `lieu`
@@ -631,7 +690,7 @@ ALTER TABLE `mission`
   ADD PRIMARY KEY (`id`),
   ADD KEY `FK_camion` (`id_vehicule`),
   ADD KEY `FK_user` (`id_user`),
-  ADD KEY `id_trajet` (`id_trajet`);
+  ADD KEY `id_trajet` (`id_itineraire`);
 
 --
 -- Index pour la table `permis`
@@ -659,7 +718,8 @@ ALTER TABLE `suivi`
 ALTER TABLE `trajet`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_lieu_depart` (`id_lieu_depart`),
-  ADD KEY `id_lieu_arrive` (`id_lieu_arrive`);
+  ADD KEY `id_lieu_arrive` (`id_lieu_arrive`),
+  ADD KEY `id_itineraire` (`id_itineraire`);
 
 --
 -- Index pour la table `type_incident`
@@ -700,19 +760,25 @@ ALTER TABLE `categorie`
 -- AUTO_INCREMENT pour la table `incident`
 --
 ALTER TABLE `incident`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT pour la table `infraction`
 --
 ALTER TABLE `infraction`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `Ip`
 --
 ALTER TABLE `Ip`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT pour la table `itineraire`
+--
+ALTER TABLE `itineraire`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT pour la table `lieu`
@@ -736,13 +802,13 @@ ALTER TABLE `produit`
 -- AUTO_INCREMENT pour la table `suivi`
 --
 ALTER TABLE `suivi`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `trajet`
 --
 ALTER TABLE `trajet`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT pour la table `type_incident`
@@ -843,7 +909,7 @@ ALTER TABLE `livraison`
 ALTER TABLE `mission`
   ADD CONSTRAINT `mission_ibfk_1` FOREIGN KEY (`id_vehicule`) REFERENCES `vehicule` (`id`),
   ADD CONSTRAINT `mission_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`),
-  ADD CONSTRAINT `mission_ibfk_3` FOREIGN KEY (`id_trajet`) REFERENCES `trajet` (`id`);
+  ADD CONSTRAINT `mission_ibfk_3` FOREIGN KEY (`id_itineraire`) REFERENCES `itineraire` (`id`);
 
 --
 -- Contraintes pour la table `permis`
@@ -862,7 +928,8 @@ ALTER TABLE `suivi`
 --
 ALTER TABLE `trajet`
   ADD CONSTRAINT `trajet_ibfk_1` FOREIGN KEY (`id_lieu_depart`) REFERENCES `lieu` (`id`),
-  ADD CONSTRAINT `trajet_ibfk_2` FOREIGN KEY (`id_lieu_arrive`) REFERENCES `lieu` (`id`);
+  ADD CONSTRAINT `trajet_ibfk_2` FOREIGN KEY (`id_lieu_arrive`) REFERENCES `lieu` (`id`),
+  ADD CONSTRAINT `trajet_ibfk_3` FOREIGN KEY (`id_itineraire`) REFERENCES `itineraire` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

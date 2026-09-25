@@ -727,3 +727,67 @@ function validateFormInfractionEdit()
 	}
 	return true;
 }
+
+
+//////////////////////////////////////////////
+
+
+function validateFormTrajetEdit()
+{
+
+	// Count
+	let compare = 0;
+	let row = 0;
+
+	// Get values
+	let lieu_depart = document.getElementById('id_lieu_depart').value;
+	let old_lieu_depart = document.getElementById('oldid_lieu_depart').value;
+	row++;
+
+	// Check values
+	if (lieu_depart == old_lieu_depart)
+	{
+		compare++;
+	}
+
+	// Get values
+	let lieu_arrive = document.getElementById('id_lieu_arrive').value;
+	let old_lieu_arrive = document.getElementById('oldid_lieu_arrive').value;
+	row++;
+
+	// Check values
+	if (lieu_arrive == old_lieu_arrive)
+	{
+		compare++;
+	}
+
+	// Get values
+	let motif = document.getElementById('motif').value;
+	let oldmotif = document.getElementById('oldmotif').value;
+	row++;
+
+	// Check values
+	if (motif == oldmotif)
+	{
+		compare++;
+	}
+
+	// Get values
+	let date_debut = document.getElementById('date_debut').value;
+	let olddate_debut = document.getElementById('olddate_debut').value;
+	row++;
+
+	// Check values
+	if (date_debut == olddate_debut)
+	{
+		compare++;
+	}
+
+	// Check counts
+	if (compare == row)
+	{
+		alert("les valeurs sont identiques");
+		return false;
+	}
+	return true;
+}

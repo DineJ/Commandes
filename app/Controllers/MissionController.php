@@ -33,10 +33,11 @@ class MissionController extends Controller
 		$search = $this->request->getGet('q');
 
 		// Query to get datas from other table
-		$builder = $this->model->select('mission.id, vehicule.plaque, CONCAT(user.nom, " ", user.prenom) AS conducteur, l1.nom_lieu AS nom_lieu_depart, l1.numero AS numero_depart, l1.adresse AS adresse_depart, l2.numero AS numero_arrive, l2.adresse AS adresse_arrivee, l2.nom_lieu AS nom_lieu_arrive, trajet.motif, trajet.date_debut, trajet.date_arrivee, trajet.km_depart, trajet.km_arrive')
+		$builder = $this->model->select('mission.id, trajet.id AS id_trajet, vehicule.plaque, CONCAT(user.nom, " ", user.prenom) AS conducteur, l1.nom_lieu AS nom_lieu_depart, l1.numero AS numero_depart, l1.adresse AS adresse_depart, l2.numero AS numero_arrive, l2.adresse AS adresse_arrivee, l2.nom_lieu AS nom_lieu_arrive, trajet.motif, trajet.date_debut, trajet.date_arrivee, trajet.km_depart, trajet.km_arrive')
 			 ->join('vehicule', 'vehicule.id = mission.id_vehicule', 'left')
 			 ->join('user', 'user.id = mission.id_user', 'left')
-			 ->join('trajet', 'trajet.id = mission.id_trajet', 'left')
+			 ->join('itineraire', 'itineraire.id = mission.id_itineraire', 'left')
+			 ->join('trajet', 'trajet.id_itineraire = itineraire.id', 'left')
 			 ->join('lieu l1', 'l1.id = trajet.id_lieu_depart', 'left')
 			 ->join('lieu l2', 'l2.id = trajet.id_lieu_arrive', 'left')
 			 ->orderBy('trajet.date_debut', 'DESC');
@@ -64,17 +65,17 @@ class MissionController extends Controller
 
 
 	// DISPLAY AN ELEMENT
-	public function show($id)
+	public function show($id, $idTrajet)
 	{
 		//load helper
 		helper('section');
 
 		// Get Datas
 		$data['item'] = $this->model->find($id);
-		$data['infractions'] = $this->infractionModel->where('infraction.id_mission', $id)->find($data['item']->id_mission);
+		$data['infractions'] = $this->infractionModel->where('infraction.id_mission', $id)->findAll();
 		$data['vehicule'] = $this->vehiculeModel->find($data['item']->id_vehicule);
 		$data['utilisateur'] = $this->userModel->find($data['item']->id_user);
-		$data['trajet'] = $this->trajetModel->find($data['item']->id_trajet);
+		$data['trajet'] = $this->trajetModel->find($idTrajet);
 		$data['lieuDepart'] = $this->lieuModel->find($data['trajet']->id_lieu_depart);
 		$data['lieuArrive'] = $this->lieuModel->find($data['trajet']->id_lieu_arrive);
 
@@ -105,28 +106,30 @@ class MissionController extends Controller
 
 
 	// MODIFICATION FORM
-	public function edit($id)
+	public function edit($id, $idTrajet)
 	{
 		$data['item'] = $this->model->find($id);
 		$data['utilisateurs'] = $this->userModel->findAll();
 		$data['vehicules'] = $this->vehiculeModel->findAll();
 		$data['lieuxDepart'] = $this->lieuModel->findAll();
 		$data['lieuxArrive'] = $this->lieuModel->findAll();
-		$data['trajet'] = $this->trajetModel->find($data['item']->id_trajet);
-		$data['motifs'] = $this->trajetModel->getMotifEnum();
+		$data['trajet'] = $this->trajetModel->find($idTrajet);
+		$data['motifs'] = $this->trajetModel->getEnumValues('motif');
 		$data['title'] = "Modifier Mission";
+
 		return view('Mission/edit', $data);
 	}
 
 
 	// UPDATE DATABASE
-	public function update($id)
+	public function update($id, $idTrajet)
 	{
 		// Retrieve submitted form data
 		$data = $this->request->getPost();
 
 		// Get the mission
 		$mission = $this->model->find($id);
+
 
 		// List of mission fields that can be updated
 		$missionFields = ['id_user','id_vehicule'];
@@ -150,8 +153,8 @@ class MissionController extends Controller
 			$this->model->save($mission);
 		}
 
-		// Get the journey
-		$trajet = $this->trajetModel->find($mission->id_trajet);
+		// Get the trial
+		$trajet = $this->trajetModel->find($idTrajet);
 
 		// List of trajet fields that can be updated
 		$trajetFields = ['id_lieu_depart','id_lieu_arrive','motif','km_depart','km_arrive'];
@@ -201,7 +204,7 @@ class MissionController extends Controller
 					  ->findAll();
 
 		$data['lieux'] = $this->lieuModel->findAll();
-		$data['motifs'] = $this->trajetModel->getMotifEnum();
+		$data['motifs'] = $this->trajetModel->getEnumValues('motifs');
 		$data['item'] = $this->model;
 
 		$missionsPending = $this->model
