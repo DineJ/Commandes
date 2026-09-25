@@ -52,7 +52,7 @@
 
 					<td>
 						<!-- Redirection button -->
-						<a href="<?= site_url('Mission/show/'.$item->id) ?>" class="btn btn-info btn-sm">Voir</a>
+						<a href="<?= site_url('Mission/show/'.$item->id. '/' .$item->id_trajet) ?>" class="btn btn-info btn-sm">Voir</a>
 					</td>
 				</tr>
 			<?php endforeach; ?>

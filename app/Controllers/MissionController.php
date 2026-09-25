@@ -33,7 +33,7 @@ class MissionController extends Controller
 		$search = $this->request->getGet('q');
 
 		// Query to get datas from other table
-		$builder = $this->model->select('mission.id, vehicule.plaque, CONCAT(user.nom, " ", user.prenom) AS conducteur, l1.nom_lieu AS nom_lieu_depart, l1.numero AS numero_depart, l1.adresse AS adresse_depart, l2.numero AS numero_arrive, l2.adresse AS adresse_arrivee, l2.nom_lieu AS nom_lieu_arrive, trajet.motif, trajet.date_debut, trajet.date_arrivee, trajet.km_depart, trajet.km_arrive')
+		$builder = $this->model->select('mission.id, trajet.id AS id_trajet, vehicule.plaque, CONCAT(user.nom, " ", user.prenom) AS conducteur, l1.nom_lieu AS nom_lieu_depart, l1.numero AS numero_depart, l1.adresse AS adresse_depart, l2.numero AS numero_arrive, l2.adresse AS adresse_arrivee, l2.nom_lieu AS nom_lieu_arrive, trajet.motif, trajet.date_debut, trajet.date_arrivee, trajet.km_depart, trajet.km_arrive')
 			 ->join('vehicule', 'vehicule.id = mission.id_vehicule', 'left')
 			 ->join('user', 'user.id = mission.id_user', 'left')
 			 ->join('itineraire', 'itineraire.id = mission.id_itineraire', 'left')
@@ -65,7 +65,7 @@ class MissionController extends Controller
 
 
 	// DISPLAY AN ELEMENT
-	public function show($id)
+	public function show($id, $idTrajet)
 	{
 		//load helper
 		helper('section');
@@ -75,9 +75,7 @@ class MissionController extends Controller
 		$data['infractions'] = $this->infractionModel->where('infraction.id_mission', $id)->findAll();
 		$data['vehicule'] = $this->vehiculeModel->find($data['item']->id_vehicule);
 		$data['utilisateur'] = $this->userModel->find($data['item']->id_user);
-		$data['trajet'] = $this->trajetModel->where('trajet.id_itineraire', $data['item']->id_itineraire)
-											->orderBy('ordre', 'ASC')
-											->first();
+		$data['trajet'] = $this->trajetModel->find($idTrajet);
 		$data['lieuDepart'] = $this->lieuModel->find($data['trajet']->id_lieu_depart);
 		$data['lieuArrive'] = $this->lieuModel->find($data['trajet']->id_lieu_arrive);
 
