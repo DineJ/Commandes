@@ -72,10 +72,12 @@ class MissionController extends Controller
 
 		// Get Datas
 		$data['item'] = $this->model->find($id);
-		$data['infractions'] = $this->infractionModel->where('infraction.id_mission', $id)->find($data['item']->id_mission);
+		$data['infractions'] = $this->infractionModel->where('infraction.id_mission', $id)->findAll();
 		$data['vehicule'] = $this->vehiculeModel->find($data['item']->id_vehicule);
 		$data['utilisateur'] = $this->userModel->find($data['item']->id_user);
-		$data['trajet'] = $this->trajetModel->find($data['item']->id_trajet);
+		$data['trajet'] = $this->trajetModel->where('trajet.id_itineraire', $data['item']->id_itineraire)
+											->orderBy('ordre', 'ASC')
+											->first();
 		$data['lieuDepart'] = $this->lieuModel->find($data['trajet']->id_lieu_depart);
 		$data['lieuArrive'] = $this->lieuModel->find($data['trajet']->id_lieu_arrive);
 
