@@ -122,13 +122,14 @@ class MissionController extends Controller
 
 
 	// UPDATE DATABASE
-	public function update($id)
+	public function update($id, $idTrajet)
 	{
 		// Retrieve submitted form data
 		$data = $this->request->getPost();
 
 		// Get the mission
 		$mission = $this->model->find($id);
+
 
 		// List of mission fields that can be updated
 		$missionFields = ['id_user','id_vehicule'];
@@ -152,8 +153,8 @@ class MissionController extends Controller
 			$this->model->save($mission);
 		}
 
-		// Get the journey
-		$trajet = $this->trajetModel->find($mission->id_trajet);
+		// Get the trial
+		$trajet = $this->trajetModel->find($idTrajet);
 
 		// List of trajet fields that can be updated
 		$trajetFields = ['id_lieu_depart','id_lieu_arrive','motif','km_depart','km_arrive'];

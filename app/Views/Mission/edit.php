@@ -3,7 +3,7 @@
 
 <h2>Mission - <?= $title ?></h2>
 
-<form method="post" action="<?= site_url('Mission/update/'.$item->id) ?>" onsubmit="return validateFormMissionEdit()">
+<form method="post" action="<?= site_url('Mission/update/'.$item->id. '/' .$trajet->id) ?>" onsubmit="return validateFormMissionEdit()">
 
 	<!-- Display all vehicles -->
 	<label for="id_vehicule">Véhicule</label>
@@ -57,7 +57,7 @@
 	<select id="motif" name="motif" class="form-control" required>
 		<?php foreach($motifs as $m): ?>
 			<option value="<?= esc($m) ?>" <?= (isset($trajet) && $trajet->motif == $m) ? 'selected' : '' ?>>
-				<?= esc($m) ?>
+				<?= esc(ucfirst($m)) ?>
 			</option>
 		<?php endforeach; ?>
 	</select>
@@ -74,7 +74,7 @@
 	<input type="hidden" id="oldkm_arrive" name="oldkm_arrive" value="<?= isset($trajet) ? $trajet->km_arrive : '' ?>">
 
 	<!-- Redirection button -->
-	<a href="<?= site_url('Mission/show/' .$item->id) ?>" class="btn btn-secondary mt-3">Retour</a>
+	<a href="<?= site_url('Mission/show/' .$item->id. '/' .$trajet->id) ?>" class="btn btn-secondary mt-3">Retour</a>
 	<button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
 </form>
 

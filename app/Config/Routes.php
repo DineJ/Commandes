@@ -47,7 +47,7 @@ $routes->group('', ['filter' => 'Redirection:admin'], function($routes)
 	$routes->get('Mission', 'MissionController::index'); // Route that leads to the display of all data
 	$routes->get('Mission/show/(:num)/(:num)', 'MissionController::show/$1/$2'); // Route that leads to the display of one specific data
 	$routes->get('Mission/edit/(:num)/(:num)', 'MissionController::edit/$1/$2'); // Route that leads to the display of editing a specific data
-	$routes->post('Mission/update/(:num)', 'MissionController::update/$1'); // Route that leads to the update fuction of the DB
+	$routes->post('Mission/update/(:num)/(:num)', 'MissionController::update/$1/$2'); // Route that leads to the update fuction of the DB
 
 
 	// Routes for Assurance
