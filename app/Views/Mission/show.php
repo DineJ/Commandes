@@ -73,7 +73,7 @@
 		<a href="<?= site_url('Mission') ?>" class="btn btn-secondary">Retour</a>
 
 		<!-- Redirection button to edit Misson form -->
-		<a href="<?= site_url('Mission/edit/'.$item->id) ?>" class="btn btn-warning">Modifier</a>
+		<a href="<?= site_url('Mission/edit/'.$item->id. '/' .$trajet->id) ?>" class="btn btn-warning">Modifier</a>
 
 	</form>
 </div>
