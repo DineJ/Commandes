@@ -36,7 +36,8 @@ class MissionController extends Controller
 		$builder = $this->model->select('mission.id, vehicule.plaque, CONCAT(user.nom, " ", user.prenom) AS conducteur, l1.nom_lieu AS nom_lieu_depart, l1.numero AS numero_depart, l1.adresse AS adresse_depart, l2.numero AS numero_arrive, l2.adresse AS adresse_arrivee, l2.nom_lieu AS nom_lieu_arrive, trajet.motif, trajet.date_debut, trajet.date_arrivee, trajet.km_depart, trajet.km_arrive')
 			 ->join('vehicule', 'vehicule.id = mission.id_vehicule', 'left')
 			 ->join('user', 'user.id = mission.id_user', 'left')
-			 ->join('trajet', 'trajet.id = mission.id_trajet', 'left')
+			 ->join('itineraire', 'itineraire.id = mission.id_itineraire', 'left')
+			 ->join('trajet', 'trajet.id_itineraire = itineraire.id', 'left')
 			 ->join('lieu l1', 'l1.id = trajet.id_lieu_depart', 'left')
 			 ->join('lieu l2', 'l2.id = trajet.id_lieu_arrive', 'left')
 			 ->orderBy('trajet.date_debut', 'DESC');
