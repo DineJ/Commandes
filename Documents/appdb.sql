@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mariadb-commandes
--- Généré le : mer. 23 sep. 2026 à 16:45
+-- Généré le : mer. 30 sep. 2026 à 08:36
 -- Version du serveur : 11.3.2-MariaDB-1:11.3.2+maria~ubu2204
 -- Version de PHP : 8.3.33
 
@@ -286,22 +286,23 @@ INSERT INTO `Ip` (`id`, `adresse_ip`, `nb_echec`) VALUES
 
 CREATE TABLE `itineraire` (
   `id` int(11) NOT NULL,
-  `nom` varchar(100) NOT NULL
+  `nom` varchar(100) NOT NULL,
+  `motif` enum('maraude','livraison','repas','demenagement','personnel') NOT NULL DEFAULT 'livraison'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `itineraire`
 --
 
-INSERT INTO `itineraire` (`id`, `nom`) VALUES
-(1, 'trajet 1'),
-(2, 'trajet 2'),
-(3, 'trajet 3'),
-(4, 'Lyon - Toulouse'),
-(5, 'Paris - Lyon'),
-(6, 'Paris - Lyon'),
-(7, 'Nice - Toulouse - Paris - Toulouse - Marseille'),
-(8, 'Marseille - Lyon - Lyon - Nice');
+INSERT INTO `itineraire` (`id`, `nom`, `motif`) VALUES
+(1, 'trajet 1', 'livraison'),
+(2, 'trajet 2', 'livraison'),
+(3, 'trajet 3', 'livraison'),
+(4, 'Lyon - Toulouse', 'livraison'),
+(5, 'Paris - Lyon', 'livraison'),
+(6, 'Paris - Lyon', 'livraison'),
+(7, 'Nice - Toulouse - Paris - Toulouse - Marseille', 'livraison'),
+(8, 'Marseille - Lyon - Lyon - Nice', 'livraison');
 
 -- --------------------------------------------------------
 
@@ -367,15 +368,19 @@ CREATE TABLE `mission` (
   `id` int(11) NOT NULL,
   `id_vehicule` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
-  `id_itineraire` int(11) DEFAULT NULL
+  `id_itineraire` int(11) NOT NULL,
+  `km_depart` int(11) NOT NULL,
+  `km_arrive` int(11) NOT NULL,
+  `date_debut` timestamp NOT NULL,
+  `date_arrivee` timestamp NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `mission`
 --
 
-INSERT INTO `mission` (`id`, `id_vehicule`, `id_user`, `id_itineraire`) VALUES
-(1, 1, 1, 1);
+INSERT INTO `mission` (`id`, `id_vehicule`, `id_user`, `id_itineraire`, `km_depart`, `km_arrive`, `date_debut`, `date_arrivee`) VALUES
+(1, 1, 1, 1, 0, 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -456,28 +461,8 @@ CREATE TABLE `trajet` (
   `id_itineraire` int(11) NOT NULL,
   `id_lieu_depart` int(11) NOT NULL,
   `id_lieu_arrive` int(11) NOT NULL,
-  `ordre` tinyint(4) NOT NULL,
-  `date_debut` timestamp NOT NULL,
-  `date_arrivee` timestamp NOT NULL,
-  `motif` enum('maraude','livraison','repas','demenagement','personnel') NOT NULL DEFAULT 'livraison',
-  `km_depart` int(11) NOT NULL,
-  `km_arrive` int(11) NOT NULL
+  `ordre` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Déchargement des données de la table `trajet`
---
-
-INSERT INTO `trajet` (`id`, `id_itineraire`, `id_lieu_depart`, `id_lieu_arrive`, `ordre`, `date_debut`, `date_arrivee`, `motif`, `km_depart`, `km_arrive`) VALUES
-(1, 1, 2, 5, 1, '2026-06-14 09:08:56', '2026-07-10 09:55:18', 'livraison', 250, 251),
-(8, 6, 1, 2, 1, '2026-09-23 00:00:00', '0000-00-00 00:00:00', 'repas', 0, 0),
-(9, 7, 5, 4, 1, '2026-10-11 00:00:00', '0000-00-00 00:00:00', 'personnel', 0, 0),
-(10, 7, 4, 1, 2, '2026-10-11 00:00:00', '0000-00-00 00:00:00', 'personnel', 0, 0),
-(11, 7, 1, 4, 3, '2026-10-11 00:00:00', '0000-00-00 00:00:00', 'personnel', 0, 0),
-(12, 7, 4, 3, 4, '2026-10-11 00:00:00', '0000-00-00 00:00:00', 'personnel', 0, 0),
-(13, 8, 3, 2, 1, '2026-10-01 00:00:00', '0000-00-00 00:00:00', 'repas', 0, 0),
-(14, 8, 2, 2, 2, '2026-10-01 00:00:00', '0000-00-00 00:00:00', 'repas', 0, 0),
-(15, 8, 2, 5, 3, '2026-10-01 00:00:00', '0000-00-00 00:00:00', 'repas', 0, 0);
 
 -- --------------------------------------------------------
 
