@@ -72,11 +72,11 @@ class AdminController extends Controller
 			->getResult();
 
 		$data['mission'] = $this->missionModel
-			  ->select('CONCAT(user.nom, " ", user.prenom) AS Conducteur, vehicule.plaque AS Plaque, trajet.motif AS Motif, l1.surnom AS `Lieu départ`, CONCAT(l1.numero, " ", l1.adresse, " ", l1.nom_lieu, " ", l1.code_postal) AS `Adresse départ`, trajet.date_debut AS Début, l2.surnom AS `Lieu arrivé`, CONCAT(l2.numero, " ", l2.adresse, " ", l2.nom_lieu, " ", l2.code_postal) AS `Adresse arrivé`,
+			  ->select('CONCAT(user.nom, " ", user.prenom) AS Conducteur, vehicule.plaque AS Plaque, itineraire.motif AS Motif, l1.surnom AS `Lieu départ`, CONCAT(l1.numero, " ", l1.adresse, " ", l1.nom_lieu, " ", l1.code_postal) AS `Adresse départ`, mission.date_debut AS Début, l2.surnom AS `Lieu arrivé`, CONCAT(l2.numero, " ", l2.adresse, " ", l2.nom_lieu, " ", l2.code_postal) AS `Adresse arrivé`,
 			CASE
-				WHEN trajet.date_arrivee = trajet.date_debut
+				WHEN mission.date_arrivee = mission.date_debut
 				THEN "En cours"
-			ELSE trajet.date_arrivee
+			ELSE mission.date_arrivee
 			END AS Fin', false)
 			->join('user', 'user.id = mission.id_user', 'left')
 			->join('vehicule', 'vehicule.id = mission.id_vehicule', 'left')
@@ -84,7 +84,7 @@ class AdminController extends Controller
 			->join('trajet', 'itineraire.id = trajet.id_itineraire', 'left')
 			->join('lieu l1', 'l1.id = trajet.id_lieu_depart', 'left')
 			->join('lieu l2', 'l2.id = trajet.id_lieu_arrive', 'left')
-			->orderBy('trajet.date_debut', 'DESC')
+			->orderBy('mission.date_debut', 'DESC')
 			->get()
 			->getResult();
 
