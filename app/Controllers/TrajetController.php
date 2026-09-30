@@ -29,19 +29,16 @@ class TrajetController extends Controller
 
 		// Query builder
 		$builder = $this->model
-			->select('trajet.id, l1.surnom AS surnom_depart, l2.surnom AS surnom_arrive, trajet.date_debut, trajet.date_arrivee, trajet.motif, trajet.km_depart, trajet.km_arrive, itineraire.nom')
+			->select('trajet.id, l1.surnom AS surnom_depart, l2.surnom AS surnom_arrive, itineraire.motif, itineraire.nom')
 			->join('lieu AS l1', 'trajet.id_lieu_depart = l1.id', 'left')
 			->join('lieu AS l2', 'trajet.id_lieu_arrive = l2.id', 'left')
-			->join('itineraire', 'itineraire.id = trajet.id_itineraire', 'left')
-			->orderBy('trajet.date_debut', 'DESC');
+			->join('itineraire', 'itineraire.id = trajet.id_itineraire', 'left');
 
 		// Search bar for query
 		if ($search)
 		{
 			$builder->like('l1.surnom', $search)
-						->orLike('l2.surnom', $search)
-						->orLike("DATE_FORMAT(trajet.date_debut, '%d/%m')", $search, 'both')
-						->orderBy('trajet.date_debut', 'DESC');
+						->orLike('l2.surnom', $search);
 		}
 
 		$data['search'] = $search;
