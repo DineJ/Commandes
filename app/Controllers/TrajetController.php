@@ -141,7 +141,6 @@ class TrajetController extends Controller
 				'ordre'          => $index + 1,
 				'id_lieu_depart' => $currentDepart,
 				'id_lieu_arrive' => $idLieuArrive,
-				'date_debut'     => $data['date_debut'],
 			]))
 			{
 				$this->model->db->transRollback();
