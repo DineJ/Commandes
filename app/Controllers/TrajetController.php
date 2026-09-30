@@ -70,7 +70,7 @@ class TrajetController extends Controller
 		$data['lieux'] = $this->lieuModel->findAll();
 
 		// Get all available motif values
-		$data['motifs'] = $this->model->getEnumValues('motif');
+		$data['motifs'] = $this->itineraireModel->getEnumValues('motif');
 
 		return view('Trajet/create', $data);
 	}
@@ -120,7 +120,7 @@ class TrajetController extends Controller
 		$this->model->db->transBegin();
 
 		// Create the itinerary
-		if (!$this->itineraireModel->insert(['nom' => $nomItineraire]))
+		if (!$this->itineraireModel->insert(['nom' => $nomItineraire, 'motif' => $data['motif']]))
 		{
 			$this->model->db->transRollback();
 			return redirect()->back()->withInput()->with('error', 'Erreur lors de la création de l\'itinéraire.');
