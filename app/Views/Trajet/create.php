@@ -36,6 +36,11 @@
 	</div>
 
 
+	<!-- Create a name -->
+	<label class="fw-bold">Nom</label>
+	<input type="text" oninput="setUpper(document.getElementById('nom'));" pattern="[a-zA-Z0-9]+([\- ]?[a-zA-Z0-9]+)*" id="nom" name="nom" value="<?= isset($item) ? $item->nom : '' ?>" class="form-control" required>
+
+
 	<!-- Select a reason -->
 	<label class="fw-bold">Motif</label>
 	<select id="motif" name="motif" class="form-control mb-2" required>

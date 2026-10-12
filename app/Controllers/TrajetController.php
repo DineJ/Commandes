@@ -88,39 +88,11 @@ class TrajetController extends Controller
 		// Get all arrival location IDs
 		$arrivees = $data['arrivees'];
 
-		// Build an ordered array containing departure + all arrivals
-		$lieuxIds = array_merge([$idLieuDepart], $arrivees);
-
-		// Retrieve all locations
-		$lieux = $this->lieuModel
-			->whereIn('id', $lieuxIds)
-			->findAll();
-
-		// Index locations by their ID for easier access
-		$lieuxById = [];
-
-		foreach ($lieux as $lieu)
-		{
-			$lieuxById[$lieu->id] = $lieu;
-		}
-
-		// Build the itinerary name in the correct order
-		$nomsLieux = [];
-
-		foreach ($lieuxIds as $idLieu)
-		{
-			// Add the location nickname to the itinerary name
-			$nomsLieux[] = $lieuxById[$idLieu]->surnom;
-		}
-
-		// Example: Marseille - Lyon - Paris - Caen
-		$nomItineraire = implode(' - ', $nomsLieux);
-
 		// Start database transaction
 		$this->model->db->transBegin();
 
 		// Create the itinerary
-		if (!$this->itineraireModel->insert(['nom' => $nomItineraire, 'motif' => $data['motif']]))
+		if (!$this->itineraireModel->insert(['nom' => $data['nom'], 'motif' => $data['motif']]))
 		{
 			$this->model->db->transRollback();
 			return redirect()->back()->withInput()->with('error', 'Erreur lors de la création de l\'itinéraire.');
