@@ -1,103 +1,101 @@
-let trajetIndex = 1;
-
-// Get the container that will hold all trajet rows
+// Manage destination rows in both create and edit forms
 const container = document.getElementById('trajets-container');
+const addButton = document.getElementById('add-trajet');
 
-// Listen for a click on the "Add trajet" button
-document.getElementById('add-trajet').addEventListener('click', function ()
-{
-	// Get the first trajet row
-	const firstRow = container.querySelector('.trajet-row');
-
-	// Clone the first trajet row, including its children
-	const newRow = firstRow.cloneNode(true);
-
-	// Create a visual separator between trajet rows
-	const separator = document.createElement('hr');
-
-	// Add Bootstrap classes to make the separator darker
-	separator.className = 'border border-dark opacity-75';
-
-	// Insert the separator at the beginning of the cloned row
-	newRow.prepend(separator);
-
-	// Get the trajet title inside the cloned row
-	const title = newRow.querySelector('.trajet-title');
-
-	// Update the title with the correct trajet number
-	title.textContent = 'Lieu d\'arrivé ' + (trajetIndex + 1);
-
-	// Loop through all select elements inside the cloned row
-	newRow.querySelectorAll('select').forEach(function (select)
-	{
-
-		// Replace the old array index with the new one
-		select.name = select.name.replace(/\[\d+\]/,`[${trajetIndex}]`);
-
-		// Reset the selected value
-		select.selectedIndex = 0;
-	});
-
-	// Create remove button
-	const removeButton = document.createElement('button');
-
-	// Prevent the button from submitting the form
-	removeButton.type = 'button';
-
-	// Add Bootstrap classes and a custom class
-	removeButton.classList.add('btn','btn-danger', 'mt-3', 'remove-trajet');
-
-	// Set the button text
-	removeButton.textContent = 'Supprimer trajet';
-
-	// Add the remove button to the cloned row
-	newRow.appendChild(removeButton);
-
-	// Add the new trajet row to the container
-	container.appendChild(newRow);
-
-	// Increment the index for the next trajet
-	updateTrajetIndexes();
-});
-
-
-// Listen for clicks inside the trajet container
-container.addEventListener('click', function (event)
-{
-	// Check if the clicked element is a remove button
-	if (event.target.classList.contains('remove-trajet'))
-	{
-		// Find the closest trajet row and remove it
-		event.target.closest('.trajet-row').remove();
-
-		// Deincrement the index for the next trajet
-		updateTrajetIndexes();
-	}
-});
-
-
+// Update the title, name and remove button of each trajet
 function updateTrajetIndexes()
 {
-	// Get all trajet rows currently displayed in the form
+
+	// Get all trajet rows
 	const rows = container.querySelectorAll('.trajet-row');
 
-	// Loop through each trajet row and get its current position
-	rows.forEach(function (row, index)
-	{
-		// Get the title of the current trajet row
-		const title = row.querySelector('.trajet-title');
+	// Loop through each trajet row
+	rows.forEach((row, index) => {
 
-		// Update the visible trajet number
-		title.textContent = 'Lieu d\'arrivé ' + (index + 1);
+		// Update the arrival location number
+		row.querySelector('.trajet-title').textContent = "Lieu d'arrivée " + (index + 1);
 
-		// Get all select elements inside the current trajet row
-		row.querySelectorAll('select').forEach(function (select)
-		{
-			// Replace the old array index in the name with the current index
-			select.name = select.name.replace(/\[\d+\]/,`[${index}]`);
-		});
+		// Update the select name with the correct index
+		row.querySelector('select').name = `arrivees[${index}]`;
+
+		// Get the remove button of the current trajet
+		const removeButton = row.querySelector('.remove-trajet');
+
+		// Hide the remove button for the first trajet
+		if (removeButton) removeButton.hidden = index === 0;
+	});
+}
+
+// Check if the form elements exist
+if (container && addButton)
+{
+
+	// Add a new trajet when clicking the add button
+	addButton.addEventListener('click', () => {
+
+		// Get the first trajet row
+		const firstRow = container.querySelector('.trajet-row');
+
+		// Stop if no trajet row exists
+		if (!firstRow) return;
+
+		// Clone the first trajet row
+		const newRow = firstRow.cloneNode(true);
+
+		// Reset the selected arrival location
+		newRow.querySelector('select').selectedIndex = 0;
+
+		// Remove the existing remove button from the cloned row
+		const oldButton = newRow.querySelector('.remove-trajet');
+		if (oldButton) oldButton.remove();
+
+		// Create a separator between trajets
+		const separator = document.createElement('hr');
+		separator.className = 'border border-dark opacity-75';
+
+		// Add the separator at the beginning of the new row
+		newRow.prepend(separator);
+
+		// Create a button to remove the new trajet
+		const removeButton = document.createElement('button');
+		removeButton.type = 'button';
+		removeButton.className = 'btn btn-danger mt-3 remove-trajet';
+		removeButton.textContent = 'Supprimer trajet';
+
+		// Add the remove button to the new row
+		newRow.appendChild(removeButton);
+
+		// Add the new trajet row to the form
+		container.appendChild(newRow);
+
+		// Update all trajet indexes
+		updateTrajetIndexes();
 	});
 
-	// Set the next trajet index according to the number of existing rows
-	trajetIndex = rows.length;
+	// Handle clicks on remove buttons
+	container.addEventListener('click', event => {
+
+		// Find the remove button that was clicked
+		const button = event.target.closest('.remove-trajet');
+
+		// Stop if the click was not on a remove button
+		if (!button) return;
+
+		// Find the trajet row containing the button
+		const row = button.closest('.trajet-row');
+
+		// Remove the row only if it is not the first trajet
+		if (row && row !== container.querySelector('.trajet-row'))
+		{
+
+			// Remove the selected trajet row
+			row.remove();
+
+			// Update all remaining trajet indexes
+			updateTrajetIndexes();
+		}
+	});
+
+	// Initialize trajet indexes when the page loads
+	updateTrajetIndexes();
 }

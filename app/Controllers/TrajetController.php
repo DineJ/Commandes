@@ -184,19 +184,26 @@ class TrajetController extends Controller
 	// MODIFICATION FORM
 	public function edit($id)
 	{
-		// Get the trajet to edit
-		$data['item'] = $this->model->find($id);
+		// Get the itinerary to edit
+		$data['item'] = $this->itineraireModel->find($id);
 
-		// Get all locations
+		// Get all trajets of the itinerary in the correct order
+		$data['trajets'] = $this->model->where('id_itineraire', $id)
+									   ->orderBy('ordre', 'ASC')
+									   ->findAll();
+
+		// Get all available locations
 		$data['lieux'] = $this->lieuModel->findAll();
 
 		// Get all available motif values
-		$data['motifs'] = $this->model->getEnumValues('motif');
+		$data['motifs'] = $this->itineraireModel->getEnumValues('motif');
 
-		$data['title'] = "Modifier Trajet";
+		// Define the form title
+		$data['title'] = 'Modifier Trajet';
+
+		// Load the edit form with the itinerary data
 		return view('Trajet/edit', $data);
 	}
-
 
 	// UPDATE DATABASE
 	public function update($id)
