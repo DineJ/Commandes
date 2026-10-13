@@ -94,13 +94,22 @@ class TrajetController extends Controller
 	// DISPLAY AN ELEMENT
 	public function show($id)
 	{
-		$data['item'] = $this->model->find($id);
-		$data['lieu_depart'] = $this->lieuModel->find($data['item']->id_lieu_depart);
-		$data['lieu_arrive'] = $this->lieuModel->find($data['item']->id_lieu_arrive);
+		// Retrieve the itinerary
+		$data['item'] = $this->itineraireModel->find($id);
+		$data['itineraire'] = $data['item'];
+
+
+		// Get all trail with names and destinations
+		$data['trajets'] = $this->model
+			->select('trajet.*, l1.surnom AS depart, l2.surnom AS arrivee')
+			->join('lieu AS l1', 'l1.id = trajet.id_lieu_depart')
+			->join('lieu AS l2', 'l2.id = trajet.id_lieu_arrive')
+			->where('trajet.id_itineraire', $id)
+			->orderBy('trajet.ordre', 'ASC')
+			->findAll();
 
 		return view('Trajet/show', $data);
 	}
-
 
 	// CREATION FORM
 	public function create()

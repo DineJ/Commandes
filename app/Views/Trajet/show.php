@@ -8,22 +8,34 @@
 	<table class="table table-striped table-bordered mt-3">
 		<tbody>
 
-			<!-- Display starting location -->
+			<!-- Name of your trail -->
 			<tr>
-				<td class="td-hidden">Lieu départ</td>
-				<td data-label="Lieu départ"><?= $lieu_depart->surnom ?></td>
+				<td class="td-hidden">Nom</td>
+				<td data-label="Nom"><?= esc($item->nom) ?></td>
 			</tr>
 
-			<!-- Display ending location -->
-			<tr>
-				<td class="td-hidden">Lieu arrivé</td>
-				<td data-label="Lieu arrivé"><?= $lieu_arrive->surnom ?></td>
-			</tr>
+			<?php
+				// Initialize an empty array to store location names
+				$noms = [];
 
-			<!-- Display the date of the trial -->
+				// Loop through each trajet in the itinerary
+				foreach ($trajets as $index => $trajet)
+				{
+					// Add the departure location only for the first trajet
+					if ($index === 0)
+					{
+						$noms[] = $trajet->depart;
+					}
+
+					// Add the arrival location of each trajet
+					$noms[] = $trajet->arrivee;
+				}
+			?>
+
+			<!-- All destinations -->
 			<tr>
-				<td class="td-hidden">Date début</td>
-				<td data-label="Date début"><?= esc(date('d/m/Y', strtotime($item->date_debut))) ?></td>
+				<td class="td-hidden">Destinations</td>
+				<td data-label="Destinations"><?= esc(implode(' → ', $noms)) ?></td>
 			</tr>
 
 			<!-- Display reason of the trial -->
