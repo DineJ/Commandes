@@ -211,92 +211,56 @@ class TrajetController extends Controller
 		// Get all submitted form data
 		$data = $this->request->getPost();
 
-		// Get the trajet to update
-		$entity = $this->model->find($id);
+		// Get the itinerary to update
+		$itineraire = $this->itineraireModel->find($id);
 
-		// Save old location IDs before updating
-		$oldLieuDepart = $entity->id_lieu_depart;
-		$oldLieuArrive = $entity->id_lieu_arrive;
+		// Get the submitted itinerary information
+		$nom = $data['nom'];
+		$motif = $data['motif'];
+		$depart = $data['id_lieu_depart'];
+		$arrivees = $data['arrivees'];
 
-		// Keep itinerary information
-		$idItineraire = $entity->id_itineraire;
-		$ordre = $entity->ordre;
+		// Start database transaction
+		$this->model->db->transBegin();
 
-		// Update trajet data
-		$entity->fill($data);
-
-		if (!$this->model->save($entity))
+		// Update the itinerary name and motif
+		if (!$this->itineraireModel->update($id, ['nom' => $nom,'motif' => $motif]))
 		{
-			return redirect()->back()->withInput()->with('error', 'Erreur lors de la mise à jour.');
+			$this->model->db->transRollback();
+			return redirect()->back()->withInput()->with('error', 'Erreur lors de la modification de l\'itinéraire.');
 		}
 
-		// Check if departure or arrival location has changed
-		$departChanged = $oldLieuDepart != $entity->id_lieu_depart;
-		$arriveChanged = $oldLieuArrive != $entity->id_lieu_arrive;
+		// Delete all existing trajets of the itinerary
+		$this->model->where('id_itineraire', $id)->delete();
 
-		if ($departChanged && $ordre > 1)
+		// Set the first departure location
+		$currentDepart = $depart;
+
+		// Create the new trajets in the correct order
+		foreach ($arrivees as $index => $arrivee)
 		{
-			// Get the previous trial
-			$previousTrajet = $this->model->where('id_itineraire', $idItineraire)
-										  ->where('ordre', $ordre - 1)
-										  ->first();
-
-			// Update the ending location of the previous trial
-			$previousTrajet->id_lieu_arrive = $entity->id_lieu_depart;
-
-			// Save it into the DB
-			$this->model->save($previousTrajet);
-		}
-
-		if ($arriveChanged)
-		{
-			// Get the next trial (return null if doenst exist)
-			$nextTrajet = $this->model->where('id_itineraire', $idItineraire)
-									  ->where('ordre', $ordre + 1)
-									  ->first();
-
-			if ($nextTrajet)
+			// Insert the current trajet into the database
+			if (!$this->model->insert([
+				'id_itineraire'  => $id,
+				'id_lieu_depart' => $currentDepart,
+				'id_lieu_arrive' => $arrivee,
+				'ordre'          => $index + 1
+			]))
 			{
-				// Update the starting location of the next trial
-				$nextTrajet->id_lieu_depart = $entity->id_lieu_arrive;
-
-				// Save it into the DB
-				$this->model->save($nextTrajet);
-			}
-		}
-
-		// Rebuild itinerary name only if a location has changed
-		if ($departChanged || $arriveChanged)
-		{
-			// Get every trajet of the itinerary in the correct order
-			$trajets = $this->model->where('id_itineraire', $idItineraire)
-								   ->orderBy('ordre', 'ASC')
-								   ->findAll();
-
-			$nomsLieux = [];
-
-			foreach ($trajets as $index => $trajet)
-			{
-				// Add the departure location only for the first trajet
-				if ($index === 0)
-				{
-					$lieuDepart = $this->lieuModel->find($trajet->id_lieu_depart);
-					$nomsLieux[] = $lieuDepart->surnom;
-				}
-
-				// Add each arrival location
-				$lieuArrive = $this->lieuModel->find($trajet->id_lieu_arrive);
-				$nomsLieux[] = $lieuArrive->surnom;
+				// Cancel all changes if an insertion fails
+				$this->model->db->transRollback();
+				return redirect()->back()->withInput()->with('error', 'Erreur lors de la modification des trajets.');
 			}
 
-			// Build the new itinerary name
-			$nomItineraire = implode(' - ', $nomsLieux);
-
-			// Update itinerary name
-			$this->itineraireModel->update($idItineraire,['nom' => $nomItineraire]);
+			// The current arrival becomes the departure of the next trajet
+			$currentDepart = $arrivee;
 		}
 
-		return redirect()->to('/Trajet');
+		// Save all database changes
+		$this->model->db->transCommit();
+
+		// Redirect
+		return redirect()->to(site_url('Trajet'));
 	}
 
 	// DELETE AN ELEMENT
