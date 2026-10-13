@@ -24,28 +24,69 @@ class TrajetController extends Controller
 	// SEARCH BAR
 	public function index()
 	{
-		// Query
+		// Get the search query from the URL
 		$search = $this->request->getGet('q');
 
-		// Query builder
-		$builder = $this->model
-			->select('trajet.id, l1.surnom AS surnom_depart, l2.surnom AS surnom_arrive, itineraire.motif, itineraire.nom')
-			->join('lieu AS l1', 'trajet.id_lieu_depart = l1.id', 'left')
-			->join('lieu AS l2', 'trajet.id_lieu_arrive = l2.id', 'left')
-			->join('itineraire', 'itineraire.id = trajet.id_itineraire', 'left');
+		// Build the query to retrieve itineraries
+		$builder = $this->itineraireModel
+			->select('itineraire.id,itineraire.nom,itineraire.motif,l1.surnom AS surnom_depart,l2.surnom AS surnom_arrive')
+			// Build the complete itinerary name using all locations
+			// Example: Marseille - Lyon - Paris - Caen
+			->select("
+				CONCAT_WS(' - ',
+					l1.surnom,
+					(
+						SELECT GROUP_CONCAT(
+							l.surnom
+							ORDER BY t.ordre
+							SEPARATOR ' - '
+						)
+						FROM trajet AS t
+						JOIN lieu AS l ON l.id = t.id_lieu_arrive
+						WHERE t.id_itineraire = itineraire.id
+					)
+				) AS nom_itineraire
+			", false)
 
-		// Search bar for query
+			// Retrieve the first trajet of each itinerary
+			->join('trajet AS premier','premier.id_itineraire = itineraire.id AND premier.ordre = (
+						SELECT MIN(t1.ordre)
+						FROM trajet AS t1
+						WHERE t1.id_itineraire = itineraire.id
+					)',
+					'left',
+					false
+				)
+			// Retrieve the last trajet of each itinerary
+			->join('trajet AS dernier','dernier.id_itineraire = itineraire.id AND dernier.ordre = (
+						SELECT MAX(t2.ordre)
+						FROM trajet AS t2
+						WHERE t2.id_itineraire = itineraire.id
+					)',
+					'left',
+					false
+				)
+			->join('lieu AS l1','l1.id = premier.id_lieu_depart','left')
+			->join('lieu AS l2','l2.id = dernier.id_lieu_arrive','left');
+
+		// Filter itineraries when a search query is provided
 		if ($search)
 		{
-			$builder->like('l1.surnom', $search)
-						->orLike('l2.surnom', $search);
+			$builder->like('itineraire.nom', $search)
+					->orLike('l1.surnom', $search)
+					->orLike('l2.surnom', $search);
 		}
 
+		// Store the search query for the view
 		$data['search'] = $search;
-		$data['items'] = $this->model->paginate(20); // Display 20 results
-		$data['pager'] = $builder->pager; // Add pager
+		// Retrieve itineraries with pagination (20 results per page)
+		$data['items'] = $builder->paginate(20);
+		// Retrieve pagination links
+		$data['pager'] = $this->itineraireModel->pager;
+		// Define the current page
 		$data['page'] = 'index';
 
+		// Load the itinerary list view
 		return view('Trajet/index', $data);
 	}
 

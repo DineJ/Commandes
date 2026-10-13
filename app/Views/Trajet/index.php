@@ -23,7 +23,7 @@
 		<!-- Datas name -->
 		<thead>
 			<tr>
-				<th>Ordre</th>
+				<th>Nom</th>
 				<th>Lieu départ</th>
 				<th>Lieu arrivé</th>
 				<th>Motif</th>
@@ -36,7 +36,7 @@
 			<!-- Display datas -->
 			<?php foreach ($items as $item): ?>
 				<tr>
-					<td data-label="Ordre"><?= esc($item->nom) ?></td>
+					<td data-label="Ordre"><?= esc($item->nom) . ' (' . esc($item->nom_itineraire) . ')'?></td>
 					<td data-label="Lieu départ"><?= esc(ucfirst($item->surnom_depart)) ?></td>
 					<td data-label="Lieu arrivé"><?= esc(ucfirst($item->surnom_arrive)) ?></td>
 					<td data-label="Motif"><?= esc(ucfirst($item->motif)) ?></td>
