@@ -35,7 +35,7 @@
 			<!-- All destinations -->
 			<tr>
 				<td class="td-hidden">Destinations</td>
-				<td data-label="Destinations"><?= esc(implode(' → ', $noms)) ?></td>
+				<td data-label="Destinations" class="td-destinations"><?= esc(implode(' → ', $noms)) ?></td>
 			</tr>
 
 			<!-- Display reason of the trial -->

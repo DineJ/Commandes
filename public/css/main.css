@@ -205,4 +205,11 @@ th {
 	.admin-button {
 		width : unset;
 	}
+
+	/* Display all destinations correctly*/
+	.table-responsive td.td-destinations {
+		max-width: 100%;
+		white-space: normal;
+		overflow-wrap: anywhere;
+	}
 }
