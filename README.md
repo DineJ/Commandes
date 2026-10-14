@@ -1,86 +1,202 @@
-# CodeIgniter 4 Application Starter
+# Commandes
 
-## What is CodeIgniter?
+A web application developed with **CodeIgniter 4**, a PHP framework.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## Requirements
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+Before installing the project, make sure you have:
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+- PHP (a version compatible with the project's CodeIgniter 4 dependencies)
+- Composer
+- Git
+- A database server, if required by the application
+- The PHP extensions required by `composer.json`
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+Check your installed versions:
 
-## Installation & updates
+```bash
+php -v
+composer --version
+git --version
+```
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+## Installation
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+### 1. Clone the repository
 
-## Setup
+Clone the project from GitHub:
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+```bash
+git clone -b main https://github.com/DineJ/Commandes.git
+```
 
-## CLI Commands
+Navigate to the project directory:
 
-> - Start code igniter server
+```bash
+cd Commandes
+```
+
+### 2. Install dependencies
+
+Install the PHP dependencies using Composer:
+
+```bash
+composer install
+```
+
+This command installs the dependencies defined in `composer.json`, using the versions specified in `composer.lock` when available.
+
+To update dependencies intentionally, use:
+
+```bash
+composer update
+```
+
+**Note:** Use `composer install` for the initial setup. `composer update` should only be used when dependencies need to be updated.
+
+### 3. Configure the environment
+
+Copy the provided `env` file to `.env`:
+
+```bash
+cp env .env
+```
+
+Open `.env` and configure the environment settings.
+
+For local development:
+
+```ini
+CI_ENVIRONMENT = development
+
+app.baseURL = 'http://localhost:8080/'
+```
+
+If the application requires a database, configure the connection:
+
+```ini
+database.default.hostname = localhost
+database.default.database = your_database
+database.default.username = your_username
+database.default.password = your_password
+database.default.DBDriver = MySQLi
+database.default.port = 3306
+```
+
+Replace these example values with your local configuration.
+
+**Important:** The `.env` file contains environment-specific settings and may contain sensitive information. It should not be committed to Git.
+
+### 4. Check the application configuration
+
+The main application configuration is located at:
+
+```text
+app/Config/App.php
+```
+
+Check that the default settings are appropriate for your environment.
+
+For example:
+
+```php
+public string $baseURL = 'http://localhost:8080/';
+```
+
+CodeIgniter 4 allows configuration values to be overridden through environment variables.
+
+For example, when `app.baseURL` is correctly defined in `.env`, it overrides the corresponding default value in `App.php`.
+
+**Recommendation:** Keep shared default settings in `App.php` and environment-specific settings in `.env`.
+
+There is no need to duplicate every configuration value in both files.
+
+### 5. Check writable directories
+
+CodeIgniter 4 uses the `writable/` directory for generated files, including cache, logs and sessions.
+
+Make sure the required directories exist:
+
+```bash
+mkdir -p writable/cache writable/logs writable/session
+```
+
+On Linux, ensure that the PHP process has write permissions for these directories.
+
+If the directories are already included in the repository, this step can be skipped.
+
+### 6. Set up the database
+
+If the application uses a database:
+
+1. Create the database specified in `.env`.
+2. Configure the database credentials.
+3. Import the project's database schema or run migrations, if provided.
+
+If CodeIgniter migrations are available, run:
+
+```bash
+php spark migrate
+```
+
+Only run migrations if they are part of the project's database setup.
+
+### 7. Start the development server
+
+Start the CodeIgniter 4 development server:
+
 ```bash
 php spark serve
 ```
 
-> - Make script executable
+By default, the application will be accessible at:
+
+[http://localhost:8080/](http://localhost:8080/)
+
+## Updating the project
+
+To retrieve the latest changes from the current branch:
+
 ```bash
-chmod +x create_crud.sh
+git pull
 ```
 
-> - Create all files for an entity (model, controller, views, routes...) or delete all files related to an entity 
-```bash 
-./create_crud.sh create EntityName field1 field2 field3 ...
-./create_crud.sh rm EntityName
+If dependencies have changed, run:
+
+```bash
+composer install
 ```
 
-## Important Change with index.php
+If new database migrations have been added, apply them when required:
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+```bash
+php spark migrate
+```
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+## Troubleshooting
 
-**Please** read the user guide for a better explanation of how CI4 works!
+### Missing dependencies
 
-## Repository Management
+If PHP dependencies are missing, run:
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+```bash
+composer install
+```
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+### Cache or writable directory errors
 
-## Server Requirements
+Check that the required directories exist and that PHP has permission to write to them.
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+### Database connection errors
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+Verify the database settings in `.env` and ensure the database server is running.
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+### Application configuration errors
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+Check the configuration in `.env` and `app/Config/App.php`.
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+## Additional documentation
+
+- [CodeIgniter 4 Documentation](https://codeigniter.com/user_guide/)
+- [Composer Documentation](https://getcomposer.org/doc/)
+- [Git Documentation](https://git-scm.com/doc)
