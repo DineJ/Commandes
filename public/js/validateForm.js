@@ -732,62 +732,89 @@ function validateFormInfractionEdit()
 //////////////////////////////////////////////
 
 
-function validateFormTrajetEdit()
-{
+// Store the original arrival locations
+let oldArrivees = [];
 
-	// Count
-	let compare = 0;
-	let row = 0;
+document.querySelectorAll('#trajets-container .trajet-row select').forEach(select => {
+	oldArrivees.push(select.value);
+});
 
-	// Get values
-	let lieu_depart = document.getElementById('id_lieu_depart').value;
-	let old_lieu_depart = document.getElementById('oldid_lieu_depart').value;
-	row++;
-
-	// Check values
-	if (lieu_depart == old_lieu_depart)
+	function validateFormTrajetEdit()
 	{
-		compare++;
-	}
 
-	// Get values
-	let lieu_arrive = document.getElementById('id_lieu_arrive').value;
-	let old_lieu_arrive = document.getElementById('oldid_lieu_arrive').value;
-	row++;
+		// Get current arrival locations
+		let arrivees = [];
 
-	// Check values
-	if (lieu_arrive == old_lieu_arrive)
-	{
-		compare++;
-	}
+		document.querySelectorAll('#trajets-container .trajet-row select').forEach(select => {
+			arrivees.push(select.value);
+		});
 
-	// Get values
-	let motif = document.getElementById('motif').value;
-	let oldmotif = document.getElementById('oldmotif').value;
-	row++;
+		// Count
+		let compare = 0;
+		let row = 0;
 
-	// Check values
-	if (motif == oldmotif)
-	{
-		compare++;
-	}
+		// Get values
+		let lieu_depart = document.getElementById('id_lieu_depart').value;
+		let old_lieu_depart = document.getElementById('oldid_lieu_depart').value;
+		row++;
 
-	// Get values
-	let date_debut = document.getElementById('date_debut').value;
-	let olddate_debut = document.getElementById('olddate_debut').value;
-	row++;
+		// Check values
+		if (lieu_depart == old_lieu_depart)
+		{
+			compare++;
+		}
 
-	// Check values
-	if (date_debut == olddate_debut)
-	{
-		compare++;
-	}
+		// Count arrival locations
+		row++;
 
-	// Check counts
-	if (compare == row)
-	{
-		alert("les valeurs sont identiques");
-		return false;
-	}
-	return true;
+		// Compare arrival locations
+		if (arrivees.length == oldArrivees.length)
+		{
+			let identical = true;
+
+			for (let i = 0; i < arrivees.length; i++)
+			{
+				if (arrivees[i] != oldArrivees[i])
+				{
+					identical = false;
+					break;
+				}
+			}
+
+			if (identical)
+			{
+				compare++;
+			}
+		}
+
+		// Get values
+		let motif = document.getElementById('motif').value;
+		let oldmotif = document.getElementById('oldmotif').value;
+		row++;
+
+		// Check values
+		if (motif == oldmotif)
+		{
+			compare++;
+		}
+
+		// Get values
+		let nom = document.getElementById('nom').value;
+		let oldnom = document.getElementById('oldnom').value;
+		row++;
+
+		// Check values
+		if (nom == oldnom)
+		{
+			compare++;
+		}
+
+		// Check counts
+		if (compare == row)
+		{
+			alert("Les valeurs sont identiques");
+			return false;
+		}
+
+		return true;
 }
