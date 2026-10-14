@@ -51,12 +51,18 @@ Vagrantfile
 
 # Allow cache folder
 !/writable/cache/
+!/writable/logs/
+!/writable/session/
 
 # Ignore files generated in cache
 /writable/cache/*
+/writable/logs/*
+/writable/session/*
 
 # Keep .gitkeep only
 !/writable/cache/.gitkeep
+!/writable/logs/.gitkeep
+!/writable/session/.gitkeep
 
 php_errors.log
 
