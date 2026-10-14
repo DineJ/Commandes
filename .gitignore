@@ -47,7 +47,16 @@ Vagrantfile
 #-------------------------
 # Temporary Files
 #-------------------------
-writable/
+/writable/*
+
+# Allow cache folder
+!/writable/cache/
+
+# Ignore files generated in cache
+/writable/cache/*
+
+# Keep .gitkeep only
+!/writable/cache/.gitkeep
 
 php_errors.log
 
