@@ -30,32 +30,53 @@ class MissionController extends Controller
 	// SEARCH BAR
 	public function index()
 	{
+		// Get the search query from the URL
 		$search = $this->request->getGet('q');
 
-		// Query to get datas from other table
-		$builder = $this->model->select('mission.id, trajet.id AS id_trajet, vehicule.plaque, CONCAT(user.nom, " ", user.prenom) AS conducteur, l1.nom_lieu AS nom_lieu_depart, l1.numero AS numero_depart, l1.adresse AS adresse_depart, l2.numero AS numero_arrive, l2.adresse AS adresse_arrivee, l2.nom_lieu AS nom_lieu_arrive, trajet.motif, trajet.date_debut, trajet.date_arrivee, trajet.km_depart, trajet.km_arrive')
-			 ->join('vehicule', 'vehicule.id = mission.id_vehicule', 'left')
-			 ->join('user', 'user.id = mission.id_user', 'left')
-			 ->join('itineraire', 'itineraire.id = mission.id_itineraire', 'left')
-			 ->join('trajet', 'trajet.id_itineraire = itineraire.id', 'left')
-			 ->join('lieu l1', 'l1.id = trajet.id_lieu_depart', 'left')
-			 ->join('lieu l2', 'l2.id = trajet.id_lieu_arrive', 'left')
-			 ->orderBy('trajet.date_debut', 'DESC');
+		// Build the query to retrieve missions
+		$builder = $this->model->select('mission.id,premier.id AS id_trajet,vehicule.plaque,CONCAT(user.nom, " ", user.prenom) AS conducteur,l1.nom_lieu AS nom_lieu_depart,l1.numero AS numero_depart,l1.adresse AS adresse_depart,l2.nom_lieu AS nom_lieu_arrive,l2.numero AS numero_arrive,l2.adresse AS adresse_arrivee,itineraire.motif,mission.date_debut,mission.date_arrivee,mission.km_depart,mission.km_arrive')
+			->join('vehicule', 'vehicule.id = mission.id_vehicule', 'left')
+			->join('user', 'user.id = mission.id_user', 'left')
+			->join('itineraire', 'itineraire.id = mission.id_itineraire', 'left')
+
+			// Retrieve the first trajet of each itinerary
+			->join(
+				'trajet AS premier',
+				'premier.id_itineraire = itineraire.id AND premier.ordre = (
+					SELECT MIN(t1.ordre)
+					FROM trajet AS t1
+					WHERE t1.id_itineraire = itineraire.id
+				)',
+				'left',
+				false
+			)
+			// Retrieve the last trajet of each itinerary
+			->join(
+				'trajet AS dernier',
+				'dernier.id_itineraire = itineraire.id AND dernier.ordre = (
+					SELECT MAX(t2.ordre)
+					FROM trajet AS t2
+					WHERE t2.id_itineraire = itineraire.id
+				)',
+				'left',
+				false
+			)
+			// Retrieve the departure location of the first trajet
+			->join('lieu AS l1', 'l1.id = premier.id_lieu_depart', 'left')
+			// Retrieve the arrival location of the last trajet
+			->join('lieu AS l2', 'l2.id = dernier.id_lieu_arrive', 'left')
+			// Sort missions by departure date
+			->orderBy('mission.date_debut', 'DESC');
 
 		if ($search)
 		{
 			$builder->groupStart()
 				->like('vehicule.plaque', $search)
 				->orLike('CONCAT(user.nom, " ", user.prenom)', $search)
-				->orLike('DATE_FORMAT(trajet.date_debut, "%d/%m/%Y")', $search)
+				->orLike('DATE_FORMAT(mission.date_debut, "%d/%m/%Y")', $search)
 				->groupEnd();
+		}
 
-			$builder->orderBy('trajet.date_debut', 'DESC');
-		}
-		else
-		{
-			$this->model->orderBy('id_vehicule');
-		}
 		$data['search'] = $search;
 		$data['items'] = $builder->paginate(20); // Display 20 results
 		$data['pager'] = $builder->pager; // Add pager
