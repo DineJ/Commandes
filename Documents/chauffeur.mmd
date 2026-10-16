@@ -1,0 +1,20 @@
+flowchart TB
+    login[Login] -->|Chauffeur| accueil[Accueil]
+    accueil --> missions{Missions en cours ?}
+    missions -->|Oui| finir[Finir trajet]
+    missions -->|Non| commencer[Commencer mission]
+    commencer --> entretien{Entretien véhicule fait ?}
+    entretien -->|Non| faire[Faire entretien]
+    faire -->|Terminer| selectionner[Sélectionner mission]
+    entretien -->|Oui| selectionner
+    selectionner -->|Valider| accueil
+    finir --> bon{Bon de livraison ?}
+    bon -->|Oui| signature[Signature]
+    bon -->|Non| suite{Suite mission ?}
+    signature --> suite
+    suite -->|Oui| finir
+    suite -->|Non| accueil
+    accueil -->|Déclarer| incident[Incident]
+    incident -->|Terminer| accueil
+    finir -->|Déclarer| incident
+    classDef default fill:#ece9fa,stroke:#a78bfa,color:#111;

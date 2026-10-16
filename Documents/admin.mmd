@@ -1,0 +1,59 @@
+flowchart TD
+
+    Login["Login"] -->|Admin| Accueil["Accueil"]
+
+    Accueil -->|Gérer| Catégorie
+    Accueil -->|Gérer| Commandes
+    Accueil -->|Gérer| Extraction
+    Accueil -->|Gérer| Infraction
+    Accueil -->|Gérer| IP
+    Accueil -->|Gérer| Itinéraire
+    Accueil -->|Gérer| Mission
+    Accueil -->|Gérer| Site
+    Accueil -->|Gérer| Stock
+    Accueil -->|Gérer| Suivi
+    Accueil -->|Gérer| Incident
+    Accueil -->|Gérer| User
+    Accueil -->|Gérer| Véhicule
+
+    Stock -->|Contient| Produit
+
+    Produit -->|Créer/Voir/Modifier/Désactiver| Produit
+
+    Catégorie -->|Créer/Voir/Modifier/Désactiver| Catégorie
+
+    Itinéraire -->|Créer/Voir/Modifier/Désactiver| Itinéraire
+
+    User -->|Créer/Voir/Modifier/Désactiver| User
+    User -->|Ajouter permis| Permis
+    Permis -->|Créer/Voir/Modifier/Désactiver| Permis
+
+    Site -->|Créer/Voir/Modifier/Désactiver| Site
+    Mission -->|Voir/Modifier| Mission
+
+    Incident -->|Créer/Voir/Modifier| Incident
+    Incident -->|Ajouter| TypeIncident["Type Incident"]
+    TypeIncident -->|Créer/Voir/Modifier| TypeIncident
+
+    IP -->|Voir/Modifier/Supprimer| IP
+    Suivi -->|Créer/Voir/Modifier| Suivi
+    Infraction -->|Créer/Voir/Modifier| Infraction
+
+    Véhicule -->|Créer/Voir/Modifier/Désactiver| Véhicule
+    Véhicule -->|Ajouter| Assurance
+    Assurance -->|Créer/Voir/Modifier/Désactiver| Assurance
+
+    Commandes -->|Créer/Voir/Modifier| Commandes
+    Commandes --> Nouvelles{"Nouvelles commandes<br/>client ?"}
+
+    Nouvelles -->|Oui| Valider["Valider nouvelles commandes client"]
+    Nouvelles -->|Non| Commandes
+
+    Valider -->|Validation| Envoyees["Commandes clients envoyé au Magasinier"]
+    Valider -->|Validation| Commandes
+    Valider -->|Création automatique trajet client| Itinéraire
+
+    classDef action fill:#f2f0ff,stroke:#9b7cff,color:#111;
+    classDef decision fill:#f2f0ff,stroke:#9b7cff,color:#111;
+    class Login,Accueil,Stock,Produits,User,Itinéraire,Site,Mission,TypeIncident,Incident,IP,Suivi,Infraction,Extraction,Assurance,Véhicule,Commandes,Valider,Envoyees action;
+    class Nouvelles decision;

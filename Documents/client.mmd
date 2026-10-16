@@ -1,0 +1,25 @@
+flowchart TB
+    login[Login] -->|Client| service[Service]
+    service -->|Consulter| historique[Historique]
+    service -->|Acheter| panier[Panier]
+    panier -->|Choisir| lieu[Choisir le lieu de livraison]
+    lieu -->|Commander| enCours{Commande en cours du lieu ?}
+    enCours -->|Oui| bloque{Bloqué par admin ?}
+    enCours -->|Non| nouvelle[Nouvelle Commande]
+    bloque -->|Non| ancienne[Ancienne Commande]
+    bloque -->|Oui| nouvelle
+    ancienne -->|Ajouter| produits{Ajouter Produits ?}
+    nouvelle -->|Ajouter| produits
+    produits -->|Oui| produits
+    produits -->|Non| enregistrer[Enregistrer commande]
+    enregistrer -->|Envoyer| requete[Requête de validation à l'admin]
+    enregistrer -->|Redirigier| service
+    service -->|Sélectionner| service
+    commandes -->|Valider| historique
+
+    commandes -->|Modifier| commandes
+    validation{Commande validé par admin ?} -->|Non| commandes
+    validation -->|Oui| historique
+    historique -->|Voir| historique
+    historique -->|Vérification| validation
+    classDef default fill:#ece9fa,stroke:#a78bfa,color:#111;

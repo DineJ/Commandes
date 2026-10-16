@@ -1,0 +1,17 @@
+flowchart TB
+    login[Login] -->|Gestionnaire| accueil[Accueil]
+    accueil -->|Accéder| commandes[Commandes]
+    accueil -->|Gérer| stock[Stock]
+    commandes -->|Vérifier| nouvelles{Nouvelles commandes validées par l'admin ?}
+    nouvelles -->|Non| commandes
+    nouvelles -->|Oui| preparation[Préparation commandes]
+    preparation -->|Ajouter| produits[Produits]
+    produits --> quantite{Quantité suffisante ?}
+    quantite -->|Oui| prete[Commande prête à être livré]
+    quantite -->|Non| message[Envoie message admin]
+    message -->|Valider| prete
+    prete -->|Créer| itineraire[Itinéraire de livraison]
+    itineraire --> commandes
+    commandes -->|Historique| commandes
+    produits -->|Mettre à jour| stock
+    classDef default fill:#ece9fa,stroke:#a78bfa,color:#111;
