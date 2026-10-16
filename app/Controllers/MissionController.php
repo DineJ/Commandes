@@ -9,6 +9,7 @@ use App\Models\LieuModel;
 use App\Models\InfractionModel;
 use App\Models\IncidentModel;
 use App\Models\TrajetModel;
+use App\Models\ItineraireModel;
 use App\Entities\Mission;
 use CodeIgniter\Controller;
 
@@ -25,6 +26,7 @@ class MissionController extends Controller
 		$this->infractionModel = new InfractionModel();
 		$this->incidentModel = new IncidentModel();
 		$this->trajetModel = new TrajetModel();
+		$this->itineraireModel = new ItineraireModel();
 	}
 
 	// SEARCH BAR
@@ -86,19 +88,29 @@ class MissionController extends Controller
 
 
 	// DISPLAY AN ELEMENT
-	public function show($id, $idTrajet)
+	public function show($id)
 	{
 		//load helper
 		helper('section');
 
 		// Get Datas
 		$data['item'] = $this->model->find($id);
+
+		// Get all trajets with departure and arrival locations
+		$data['trajets'] = $this->trajetModel
+			->select('trajet.*, l1.surnom AS depart, l2.surnom AS arrivee')
+			->join('lieu AS l1', 'l1.id = trajet.id_lieu_depart')
+			->join('lieu AS l2', 'l2.id = trajet.id_lieu_arrive')
+			->where('trajet.id_itineraire', $data['item']->id_itineraire)
+			->orderBy('trajet.ordre', 'ASC')
+			->findAll();
+
 		$data['infractions'] = $this->infractionModel->where('infraction.id_mission', $id)->findAll();
+		$data['itineraire'] = $this->itineraireModel->find($data['item']->id_itineraire);
 		$data['vehicule'] = $this->vehiculeModel->find($data['item']->id_vehicule);
 		$data['utilisateur'] = $this->userModel->find($data['item']->id_user);
-		$data['trajet'] = $this->trajetModel->find($idTrajet);
-		$data['lieuDepart'] = $this->lieuModel->find($data['trajet']->id_lieu_depart);
-		$data['lieuArrive'] = $this->lieuModel->find($data['trajet']->id_lieu_arrive);
+		$data['lieuDepart'] = $this->lieuModel->find($data['trajets'][0]->id_lieu_depart);
+		$data['lieuArrive'] = $this->lieuModel->find(end($data['trajets'])->id_lieu_arrive);
 
 		return view('Mission/show', $data);
 	}
