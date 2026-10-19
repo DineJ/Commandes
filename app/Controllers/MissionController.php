@@ -161,66 +161,103 @@ class MissionController extends Controller
 	}
 
 
-	// UPDATE DATABASE
-	public function update($id, $idTrajet)
+// UPDATE DATABASE
+public function update($id)
+{
+	// Get datas
+	$data = $this->request->getPost();
+	$mission = $this->model->find($id);
+	$itineraire = $this->itineraireModel->find($mission->id_itineraire);
+
+	// Get the submitted departure and arrival locations
+	$depart = $data['id_lieu_depart'] ?? null;
+	$arrivees = $data['arrivees'] ?? [];
+
+	// Start database transaction
+	$this->model->db->transBegin();
+
+	// Update the mission information
+	$missionFields = [
+		'id_user',
+		'id_vehicule',
+		'km_depart',
+		'km_arrive'
+	];
+
+	// Check whether mission information has changed
+	$missionUpdated = false;
+
+	foreach ($missionFields as $field)
 	{
-		// Retrieve submitted form data
-		$data = $this->request->getPost();
-
-		// Get the mission
-		$mission = $this->model->find($id);
-
-
-		// List of mission fields that can be updated
-		$missionFields = ['id_user','id_vehicule'];
-
-		// Flag
-		$missionUpdated = false;
-
-		foreach ($missionFields as $field)
+		// Update the field only if the submitted value is different
+		if (isset($data[$field]) && $mission->$field != $data[$field])
 		{
-			// Update the field only if the new value is different
-			if (isset($data[$field]) && $mission->$field != $data[$field])
-			{
-				$mission->$field = $data[$field];
-				$missionUpdated = true;
-			}
+			$mission->$field = $data[$field];
+			$missionUpdated = true;
 		}
-
-		// Save the mission only if at least one field has changed
-		if ($missionUpdated)
-		{
-			$this->model->save($mission);
-		}
-
-		// Get the trial
-		$trajet = $this->trajetModel->find($idTrajet);
-
-		// List of trajet fields that can be updated
-		$trajetFields = ['id_lieu_depart','id_lieu_arrive','motif','km_depart','km_arrive'];
-
-		// Flag
-		$trajetUpdated = false;
-
-		foreach ($trajetFields as $field)
-		{
-			// Update the field only if the new value is different
-			if (isset($data[$field]) && $trajet->$field != $data[$field])
-			{
-				$trajet->$field = $data[$field];
-				$trajetUpdated = true;
-			}
-		}
-
-		// Save the trajet only if at least one field has changed
-		if ($trajetUpdated)
-		{
-			$this->trajetModel->save($trajet);
-		}
-
-		// Redirect back to the mission list
-		return redirect()->to('/Mission');
 	}
+
+	// Save the mission only if information has changed
+	if ($missionUpdated && !$this->model->save($mission))
+	{
+		$this->model->db->transRollback();
+		return redirect()->back()->withInput()->with('error', 'Erreur lors de la modification de la mission.');
+	}
+
+	// Update the itinerary reason
+	if (isset($data['motif']) && $itineraire->motif != $data['motif'])
+	{
+		if (!$this->itineraireModel->update($itineraire->id,['motif' => $data['motif']]))
+		{
+			$this->model->db->transRollback();
+			return redirect()->back()->withInput()->with('error', 'Erreur lors de la modification du motif.');
+		}
+	}
+
+	// Delete all existing trajets of the itinerary
+	if ($this->trajetModel->where('id_itineraire', $itineraire->id)->delete() === false)
+	{
+		$this->model->db->transRollback();
+		return redirect()->back()->withInput()->with('error', 'Erreur lors de la suppression des anciens trajets.');
+	}
+
+	// Set the first departure location
+	$currentDepart = $depart;
+
+	// Create all trajets in the correct order
+	foreach (array_values($arrivees) as $index => $idLieuArrive)
+	{
+		// Insert the current trajet
+		if (!$this->trajetModel->insert([
+			'id_itineraire'  => $itineraire->id,
+			'id_lieu_depart' => $currentDepart,
+			'id_lieu_arrive' => $idLieuArrive,
+			'ordre'          => $index + 1
+		]))
+		{
+			// Cancel all changes if an insertion fails
+			$this->model->db->transRollback();
+			return redirect()->back()->withInput()->with('error', 'Erreur lors de la modification des trajets.');
+		}
+
+		// The current arrival becomes the next departure
+		$currentDepart = $idLieuArrive;
+	}
+
+	// Check whether the database transaction was successful
+	if ($this->model->db->transStatus() === false)
+	{
+		$this->model->db->transRollback();
+		return redirect()->back()->withInput()->with('error', 'Erreur lors de la modification de la mission.');
+	}
+
+	// Commit all database changes
+	$this->model->db->transCommit();
+
+	// Redirect to the mission details
+	return redirect()->to(site_url('Mission'));
+}
+
 
 	// DELETE AN ELEMENT
 	public function delete($id)
