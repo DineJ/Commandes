@@ -1,9 +1,10 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 
-<h2>Mission - <?= $title ?></h2>
+<h2>Mission - <?= esc($title) ?></h2>
 
-<form method="post" action="<?= site_url('Mission/update/'.$item->id. '/' .$trajet->id) ?>" onsubmit="return validateFormMissionEdit()">
+<form method="post" action="<?= site_url('Mission/update/' . $item->id) ?>" onsubmit="return validateFormMissionEdit()">
+	<?= csrf_field() ?>
 
 	<!-- Display all vehicles -->
 	<label for="id_vehicule">Véhicule</label>
@@ -16,7 +17,6 @@
 	</select>
 	<input type="hidden" id="oldid_vehicule" name="oldid_vehicule" value="<?= isset($item) ? $item->id_vehicule : '' ?>">
 
-
 	<!-- Display all drivers -->
 	<label for="id_user">Conducteur</label>
 	<select id="id_user" name="id_user" class="form-control" required>
@@ -28,57 +28,77 @@
 	</select>
 	<input type="hidden" id="oldid_user" name="oldid_user" value="<?= isset($item) ? $item->id_user : '' ?>">
 
-	<!-- Display start locations -->
-	<label for="id_lieu_depart">Lieu de départ</label>
-	<select id="id_lieu_depart" name="id_lieu_depart" class="form-control" required>
-		<?php foreach($lieuxDepart as $l1): ?>
-			<option value="<?= $l1->id ?>" <?= (isset($trajet) && $trajet->id_lieu_depart == $l1->id) ? 'selected' : '' ?>>
-				<?= esc($l1->numero) . ' ' . esc($l1->adresse) . ' ' . esc($l1->nom_lieu) ?>
+	<!-- Add an itinerary segment -->
+	<button type="button" id="add-trajet" class="btn btn-success mt-3 mb-4">Ajouter un trajet</button>
+	<br>
+
+	<!-- Display the first departure location -->
+	<label for="id_lieu_depart" class="fw-bold">Lieu de départ</label>
+	<select id="id_lieu_depart" name="id_lieu_depart" class="form-control mb-3" required>
+		<option value="" disabled <?= empty($trajets) ? 'selected' : '' ?>>Choisir un lieu de départ</option>
+		<?php foreach($lieux as $lieu): ?>
+			<option value="<?= $lieu->id ?>"
+				<?= !empty($trajets) && $trajets[0]->id_lieu_depart == $lieu->id ? 'selected' : '' ?>>
+				<?= esc($lieu->numero . ' ' . $lieu->adresse . ' ' . $lieu->nom_lieu) ?>
 			</option>
 		<?php endforeach; ?>
 	</select>
-	<input type="hidden" id="oldid_lieu_depart" name="oldid_lieu_depart" value="<?= isset($trajet) ? $trajet->id_lieu_depart : '' ?>">
+	<input type="hidden" id="oldid_lieu_depart" name="oldid_lieu_depart" value="<?= !empty($trajets) ? esc($trajets[0]->id_lieu_depart) : '' ?>">
 
-
-	<!-- Display end location -->
-	<label for="id_lieu_arrive">Lieu arrivé</label>
-	<select id="id_lieu_arrive" name="id_lieu_arrive" class="form-control" required>
-		<?php foreach($lieuxArrive as $l2): ?>
-			<option value="<?= $l2->id ?>" <?= (isset($trajet) && $trajet->id_lieu_arrive == $l2->id) ? 'selected' : '' ?>>
-				<?= esc($l2->numero) . ' ' . esc($l2->adresse) . ' ' . esc($l2->nom_lieu) ?>
-			</option>
+	<!-- Display every arrival location in itinerary order -->
+	<div id="trajets-container">
+		<?php foreach((empty($trajets) ? [null] : $trajets) as $index => $trajet): ?>
+			<div class="trajet-row mb-4">
+				<label class="fw-bold trajet-title" for="arrivee-<?= $index ?>">
+					Lieu d'arrivée <?= $index + 1 ?>
+				</label>
+				<select id="arrivee-<?= $index ?>" name="arrivees[<?= $index ?>]" class="form-control" required>
+					<option value="" disabled <?= $trajet === null ? 'selected' : '' ?>>Choisir un lieu d'arrivée</option>
+					<?php foreach ($lieux as $lieu): ?>
+						<option value="<?= esc($lieu->id) ?>"
+							<?= $trajet !== null && $trajet->id_lieu_arrive == $lieu->id ? 'selected' : '' ?>>
+							<?= esc($lieu->numero . ' ' . $lieu->adresse . ' ' . $lieu->nom_lieu) ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+				<?php if ($index > 0): ?>
+					<button type="button" class="btn btn-danger mt-3 remove-trajet">Supprimer trajet</button>
+				<?php endif; ?>
+			</div>
 		<?php endforeach; ?>
-	</select>
-	<input type="hidden" id="oldid_lieu_arrive" name="oldid_lieu_arrive" value="<?= isset($trajet) ? $trajet->id_lieu_arrive : '' ?>">
-
+	</div>
+	<input type="hidden" id="oldid_lieu_arrive" name="oldid_lieu_arrive"
+		   value="<?= !empty($trajets) ? esc($trajets[array_key_last($trajets)]->id_lieu_arrive) : '' ?>">
 
 	<!-- Select reasons of the travel -->
 	<label for="motif">Motif</label>
 	<select id="motif" name="motif" class="form-control" required>
 		<?php foreach($motifs as $m): ?>
-			<option value="<?= esc($m) ?>" <?= (isset($trajet) && $trajet->motif == $m) ? 'selected' : '' ?>>
+			<option value="<?= esc($m) ?>" <?= $itineraire && $itineraire->motif == $m ? 'selected' : '' ?>>
 				<?= esc(ucfirst($m)) ?>
 			</option>
 		<?php endforeach; ?>
 	</select>
-	<input type="hidden" id="oldmotif" name="oldmotif" value="<?= isset($trajet) ? $trajet->motif : '' ?>">
+	<input type="hidden" id="oldmotif" name="oldmotif" value="<?= $itineraire ? esc($itineraire->motif) : '' ?>">
 
 	<!-- Select start Km -->
 	<label>Km de départ</label>
-	<input type="number" id="km_depart" name="km_depart" value="<?= isset($trajet) ? $trajet->km_depart : '' ?>" class="form-control" required>
-	<input type="hidden" id="oldkm_depart" name="oldkm_depart" value="<?= isset($trajet) ? $trajet->km_depart : '' ?>">
+	<input type="number" id="km_depart" name="km_depart" value="<?= esc($item->km_depart) ?>" class="form-control" required>
+	<input type="hidden" id="oldkm_depart" name="oldkm_depart" value="<?= esc($item->km_depart) ?>">
 
 	<!-- Select end Km -->
 	<label>Km arrivé</label>
-	<input type="number" id="km_arrive" name="km_arrive" value="<?= isset($trajet) ? $trajet->km_arrive : '' ?>" class="form-control" required>
-	<input type="hidden" id="oldkm_arrive" name="oldkm_arrive" value="<?= isset($trajet) ? $trajet->km_arrive : '' ?>">
+	<input type="number" id="km_arrive" name="km_arrive" value="<?= esc($item->km_arrive) ?>" class="form-control" required>
+	<input type="hidden" id="oldkm_arrive" name="oldkm_arrive" value="<?= esc($item->km_arrive) ?>">
 
 	<!-- Redirection button -->
-	<a href="<?= site_url('Mission/show/' .$item->id. '/' .$trajet->id) ?>" class="btn btn-secondary mt-3">Retour</a>
+	<a href="<?= site_url('Mission/show/' . $item->id) ?>" class="btn btn-secondary mt-3">Retour</a>
 	<button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
 </form>
 
 
 <script src="<?= base_url('js/validateForm.js') ?>"></script>
 <script src="<?= base_url('js/validateKm.js') ?>"></script>
+<script src="<?= base_url('js/trajetForm.js') ?>"></script>
+
 <?= $this->endSection() ?>

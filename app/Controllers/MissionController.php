@@ -139,16 +139,23 @@ class MissionController extends Controller
 
 
 	// MODIFICATION FORM
-	public function edit($id, $idTrajet)
+	public function edit($id)
 	{
+		// Get datas
 		$data['item'] = $this->model->find($id);
 		$data['utilisateurs'] = $this->userModel->findAll();
 		$data['vehicules'] = $this->vehiculeModel->findAll();
-		$data['lieuxDepart'] = $this->lieuModel->findAll();
-		$data['lieuxArrive'] = $this->lieuModel->findAll();
-		$data['trajet'] = $this->trajetModel->find($idTrajet);
-		$data['motifs'] = $this->trajetModel->getEnumValues('motif');
-		$data['title'] = "Modifier Mission";
+		$data['itineraires'] = $this->itineraireModel->findAll();
+		$data['motifs'] = $this->itineraireModel->getEnumValues('motif');
+		$data['itineraire'] = $this->itineraireModel->find($data['item']->id_itineraire);
+		$data['lieux'] = $this->lieuModel->findAll();
+		$data['title'] = 'Modifier Mission';
+
+		// Get all trajets in the correct order
+		$data['trajets'] = $this->trajetModel
+			->where('id_itineraire', $data['item']->id_itineraire)
+			->orderBy('ordre', 'ASC')
+			->findAll();
 
 		return view('Mission/edit', $data);
 	}
