@@ -67,7 +67,8 @@ class TrajetController extends Controller
 					false
 				)
 			->join('lieu AS l1','l1.id = premier.id_lieu_depart','left')
-			->join('lieu AS l2','l2.id = dernier.id_lieu_arrive','left');
+			->join('lieu AS l2','l2.id = dernier.id_lieu_arrive','left')
+			->orderBy('itineraire.id', 'DESC');
 
 		// Filter itineraries when a search query is provided
 		if ($search)
