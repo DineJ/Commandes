@@ -475,98 +475,125 @@ function validateFormAssurance()
 //////////////////////////////////////////////
 
 
-	function validateFormMissionEdit()
+// Store the original arrival locations
+let oldArriveesMission = [];
+
+document.querySelectorAll('#trajets-container .trajet-row select').forEach(select => {
+	oldArriveesMission.push(select.value);
+});
+
+// VALIDATE MISSION EDIT FORM
+function validateFormMissionEdit()
+{
+	// Get current arrival locations
+	let arrivees = [];
+
+	document.querySelectorAll('#trajets-container .trajet-row select').forEach(select => {
+		arrivees.push(select.value);
+	});
+
+	// Count
+	let compare = 0;
+	let row = 0;
+
+	// Get vehicle values
+	let id_vehicule = document.getElementById('id_vehicule').value;
+	let oldid_vehicule = document.getElementById('oldid_vehicule').value;
+	row++;
+
+	// Compare vehicle values
+	if (id_vehicule == oldid_vehicule)
 	{
-
-		// Count
-		let compare = 0;
-		let row = 0;
-
-		// Get values
-		let id_vehicule = document.getElementById('id_vehicule').value;
-		let oldid_vehicule = document.getElementById('oldid_vehicule').value;
-		row++;
-
-		// Check values
-		if (id_vehicule == oldid_vehicule)
-		{
-			compare++;
-		}
-
-		// Get values
-		let id_user = document.getElementById('id_user').value;
-		let oldid_user = document.getElementById('oldid_user').value;
-		row++;
-
-		// Check values
-		if (id_user == oldid_user)
-		{
-			compare++;
-		}
-
-		// Get values
-		let id_lieu_depart = document.getElementById('id_lieu_depart').value;
-		let oldid_lieu_depart = document.getElementById('oldid_lieu_depart').value;
-		row++;
-
-		// Check values
-		if (id_lieu_depart == oldid_lieu_depart)
-		{
-			compare++;
-		}
-
-		// Get values
-		let id_lieu_arrive = document.getElementById('id_lieu_arrive').value;
-		let oldid_lieu_arrive = document.getElementById('oldid_lieu_arrive').value;
-		row++;
-
-		// Check values
-		if (id_lieu_arrive == oldid_lieu_arrive)
-		{
-			compare++;
-		}
-
-		// Get values
-		let motif = document.getElementById('motif').value;
-		let oldmotif = document.getElementById('oldmotif').value;
-		row++;
-
-		// Check values
-		if (motif == oldmotif)
-		{
-			compare++;
-		}
-
-		// Get values
-		let km_depart = document.getElementById('km_depart').value;
-		let oldkm_depart = document.getElementById('oldkm_depart').value;
-		row++;
-
-		// Check values
-		if (km_depart == oldkm_depart)
-		{
-			compare++;
-		}
-
-		// Get values
-		let km_arrive = document.getElementById('km_arrive').value;
-		let oldkm_arrive = document.getElementById('oldkm_arrive').value;
-		row++;
-
-		// Check values
-		if (km_arrive == oldkm_arrive)
-		{
-			compare++;
-		}
-
-		// Check counts
-		if (compare == row)
-		{
-			alert("les valeurs sont identiques");
-			return false;
-		}
-		return true;
+		compare++;
 	}
+
+	// Get driver values
+	let id_user = document.getElementById('id_user').value;
+	let oldid_user = document.getElementById('oldid_user').value;
+	row++;
+
+	// Compare driver values
+	if (id_user == oldid_user)
+	{
+		compare++;
+	}
+
+	// Get departure location values
+	let id_lieu_depart = document.getElementById('id_lieu_depart').value;
+	let oldid_lieu_depart = document.getElementById('oldid_lieu_depart').value;
+	row++;
+
+	// Compare departure location values
+	if (id_lieu_depart == oldid_lieu_depart)
+	{
+		compare++;
+	}
+
+	// Count arrival locations
+	row++;
+
+	// Compare arrival locations
+	if (arrivees.length == oldArriveesMission.length)
+	{
+		let identical = true;
+
+		for (let i = 0; i < arrivees.length; i++)
+		{
+			if (arrivees[i] != oldArriveesMission[i])
+			{
+				identical = false;
+				break;
+			}
+		}
+
+		if (identical)
+		{
+			compare++;
+		}
+	}
+
+	// Get itinerary reason values
+	let motif = document.getElementById('motif').value;
+	let oldmotif = document.getElementById('oldmotif').value;
+	row++;
+
+	// Compare itinerary reason values
+	if (motif == oldmotif)
+	{
+		compare++;
+	}
+
+	// Get starting kilometer values
+	let km_depart = document.getElementById('km_depart').value;
+	let oldkm_depart = document.getElementById('oldkm_depart').value;
+	row++;
+
+	// Compare starting kilometer values
+	if (km_depart == oldkm_depart)
+	{
+		compare++;
+	}
+
+	// Get ending kilometer values
+	let km_arrive = document.getElementById('km_arrive').value;
+	let oldkm_arrive = document.getElementById('oldkm_arrive').value;
+	row++;
+
+	// Compare ending kilometer values
+	if (km_arrive == oldkm_arrive)
+	{
+		compare++;
+	}
+
+	// Check if all values are identical
+	if (compare == row)
+	{
+		alert("Les valeurs sont identiques");
+		return false;
+	}
+
+	return true;
+}
 
 
 //////////////////////////////////////////////
@@ -731,13 +758,6 @@ function validateFormInfractionEdit()
 
 //////////////////////////////////////////////
 
-
-// Store the original arrival locations
-let oldArrivees = [];
-
-document.querySelectorAll('#trajets-container .trajet-row select').forEach(select => {
-	oldArrivees.push(select.value);
-});
 
 	function validateFormTrajetEdit()
 	{
